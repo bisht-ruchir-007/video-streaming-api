@@ -3,6 +3,8 @@ package com.app.practice.service.impl;
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
+import com.app.practice.model.request.VideoRequest;
+import com.app.practice.model.response.VideoResponse;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.VideoService;
 import org.springframework.stereotype.Service;
@@ -21,20 +23,26 @@ public class VideoServiceImpl implements VideoService {
         this.videoRepository = videoRepository;
     }
 
-
     @Override
-    public Video publishVideo(Video video) {
-        return videoRepository.save(video);
+    public VideoResponse publishVideo(VideoRequest videoRequest) {
+
+        Video video = VideoRequest.toVideo(videoRequest);
+        videoRepository.save(video);
+        return VideoResponse.videoMapper(video);
     }
 
     @Override
-    public Video editVideo(Long id, Video video) throws VideoNotFoundException {
-        Video existing = videoRepository.findById(id)
+    public VideoResponse editVideo(Long id, VideoRequest video) throws VideoNotFoundException {
+        Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
-        existing.setTitle(video.getTitle());
-        existing.setDirector(video.getDirector());
-        existing.setGenre(video.getGenre());
-        return videoRepository.save(existing);
+
+        existingVideo.setTitle(video.getTitle());
+        existingVideo.setDirector(video.getDirector());
+        existingVideo.setGenre(video.getGenre());
+
+        videoRepository.save(existingVideo);
+
+        return VideoResponse.videoMapper(existingVideo);
     }
 
     @Override
@@ -46,12 +54,16 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Optional<Video> loadVideo(Long id) throws VideoNotFoundException {
+    public Optional<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
         video.setImpressions(video.getImpressions() + 1);
         videoRepository.save(video);
-        return Optional.of(video);
+
+        VideoDTO videoDTO = new VideoDTO(video.getId(), video.getTitle(), video.getDirector(),
+                video.getCast(), video.getGenre(), video.getRunningTime());
+
+        return Optional.of(videoDTO);
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.app.practice.controller;
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
+import com.app.practice.model.request.VideoRequest;
+import com.app.practice.model.response.VideoResponse;
 import com.app.practice.service.VideoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +22,17 @@ public class VideoController {
         this.videoService = videoService;
     }
 
-    // ✅ 1. Publish a new video
+    // Publish a new video
     @PostMapping("/publish")
-    public ResponseEntity<Video> publishVideo(@RequestBody Video video) {
-        Video savedVideo = videoService.publishVideo(video);
+    public ResponseEntity<VideoResponse> publishVideo(@RequestBody VideoRequest video) {
+        VideoResponse savedVideo = videoService.publishVideo(video);
         return ResponseEntity.ok(savedVideo);
     }
 
-    // ✅ 2. Edit video metadata
+    // Edit video metadata
     @PutMapping("/edit/{id}")
-    public ResponseEntity<Video> editVideo(@PathVariable Long id, @RequestBody Video video) throws VideoNotFoundException {
-        Video updatedVideo = videoService.editVideo(id, video);
+    public ResponseEntity<VideoResponse> editVideo(@PathVariable Long id, @RequestBody VideoRequest videoRequest) throws VideoNotFoundException {
+        VideoResponse updatedVideo = videoService.editVideo(id, videoRequest);
         return ResponseEntity.ok(updatedVideo);
     }
 
@@ -43,8 +45,8 @@ public class VideoController {
 
     // ✅ 4. Load a video (Return metadata + increase impressions)
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Video>> loadVideo(@PathVariable Long id) throws VideoNotFoundException {
-        Optional<Video> video = videoService.loadVideo(id);
+    public ResponseEntity<Optional<VideoDTO>> loadVideo(@PathVariable Long id) throws VideoNotFoundException {
+        Optional<VideoDTO> video = videoService.loadVideo(id);
         return ResponseEntity.ok(video);
     }
 
