@@ -13,8 +13,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(VideoNotFoundException.class)
+    public ResponseEntity<String> handleVideoNotFoundException(VideoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("An error occurred: " + ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericExcpetion(Exception ex) {
+    public ResponseEntity<String> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + ex.getMessage());
     }
 }
