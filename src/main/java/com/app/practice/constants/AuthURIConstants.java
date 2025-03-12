@@ -11,6 +11,7 @@ public class AuthURIConstants {
     // Endpoints for authentication
     public static final String LOGIN_ENDPOINT = "/login";
     public static final String REGISTER_ENDPOINT = "/register";
+    public static final String REFRESH_TOKEN = "/refresh-token";
 
     // Private constructor to prevent instantiation
     private AuthURIConstants() {

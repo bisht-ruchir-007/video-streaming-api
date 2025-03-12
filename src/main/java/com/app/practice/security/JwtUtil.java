@@ -20,11 +20,14 @@ import java.util.function.Function;
 public class JwtUtil {
 
     private final long jwtExpirationTimeInSec;
+    private final long refreshExpirationTimeInSec;
     private final SecretKey jwtSecretKey;
 
     public JwtUtil(@Value("${jwt.expiration-time-in-sec}") long jwtExpirationTimeInSec,
+                   @Value("${jwt.refresh-expiration-time-in-sec}") long refreshExpirationTimeInSec,
                    @Value("${jwt.secret-key}") String jwtSecretKey) {
         this.jwtExpirationTimeInSec = jwtExpirationTimeInSec;
+        this.refreshExpirationTimeInSec = refreshExpirationTimeInSec;
         this.jwtSecretKey = generateSecretKey(jwtSecretKey);
     }
 
@@ -44,48 +47,52 @@ public class JwtUtil {
     }
 
     /**
-     * Generate JWT token for a user.
+     * Generate JWT Access Token.
      */
     public String generateToken(String username) {
-        return generateToken(new HashMap<>(), username);
+        return generateToken(new HashMap<>(), username, jwtExpirationTimeInSec);
     }
 
-    public String generateToken(Map<String, Object> claims, String username) {
+    /**
+     * Generate JWT Refresh Token.
+     */
+    public String generateRefreshToken(String username) {
+        return generateToken(new HashMap<>(), username, refreshExpirationTimeInSec);
+    }
+
+    private String generateToken(Map<String, Object> claims, String username, long expirationTime) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTimeInSec * 1000)) // Convert seconds to milliseconds
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512) // Use SHA-512
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime * 1000)) // Convert seconds to milliseconds
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
     /**
-     * Extract username from JWT token.
+     * Extract username from JWT.
      */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     /**
-     * Extract expiration date from JWT token.
+     * Extract expiration date from JWT.
      */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
     /**
-     * Extract a claim from JWT token.
+     * Extract claims from JWT.
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    /**
-     * Extract all claims from JWT token.
-     */
-    public Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -94,17 +101,17 @@ public class JwtUtil {
     }
 
     /**
-     * Check if JWT token is expired.
-     */
-    public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    /**
      * Validate JWT token.
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    /**
+     * Check if the token is expired.
+     */
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

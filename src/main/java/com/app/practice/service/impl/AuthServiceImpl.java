@@ -1,6 +1,7 @@
 package com.app.practice.service.impl;
 
 import com.app.practice.entity.User;
+import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
 import com.app.practice.repository.UserRepository;
 import com.app.practice.security.JwtUtil;
@@ -49,10 +50,12 @@ public class AuthServiceImpl implements AuthService {
         LOGGER.info("User '{}' registered successfully.", userCredentials.getUsername());
 
         String token = jwtUtil.generateToken(userCredentials.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(userCredentials.getUsername());
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "User registered successfully");
-        response.put("token", token);
+        response.put("accessToken", token);
+        response.put("refreshToken", refreshToken);
         return response;
     }
 
@@ -68,12 +71,32 @@ public class AuthServiceImpl implements AuthService {
                 });
 
         String token = jwtUtil.generateToken(userDetails.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+
         LOGGER.info("User '{}' logged in successfully.", userCredentials.getUsername());
 
         Map<String, String> response = new HashMap<>();
-
         response.put("message", "User logged in successfully");
-        response.put("token", token);
+        response.put("accessToken", token);
+        response.put("refreshToken", refreshToken);
+
+        return response;
+    }
+
+    public Map<String, String> refreshToken(RefreshTokenRequest refreshTokenReq) {
+        String refreshToken = refreshTokenReq.getRefreshToken();
+        String username = jwtUtil.extractUsername(refreshToken);
+
+        if (jwtUtil.isTokenExpired(refreshToken)) {
+            throw new IllegalArgumentException("Refresh token is expired");
+        }
+
+        String newAccessToken = jwtUtil.generateToken(username);
+        String newRefreshToken = jwtUtil.generateRefreshToken(username);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("accessToken", newAccessToken);
+        response.put("refreshToken", newRefreshToken);
 
         return response;
     }

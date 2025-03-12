@@ -1,6 +1,7 @@
 package com.app.practice.controller;
 
 import com.app.practice.constants.AuthURIConstants;
+import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
 import com.app.practice.service.AuthService;
 import org.slf4j.Logger;
@@ -53,6 +54,13 @@ public class AuthController {
 
         Map<String, String> response = authService.loginUser(userCredentials);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(AuthURIConstants.REFRESH_TOKEN)
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest) {
+
+        Map<String, String> response = authService.refreshToken(tokenRequest);
         return ResponseEntity.ok(response);
     }
 }
