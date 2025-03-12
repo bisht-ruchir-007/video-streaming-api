@@ -5,13 +5,13 @@ public class EngagementResponse {
     private String title;
     private String synopsis;
     private String director;
-    private int impressions = 0;
-    private int views = 0;
+    private Long impressions = 0L;
+    private Long views = 0L;
 
     public EngagementResponse() {
     }
 
-    public EngagementResponse(String title, String synopsis, String director, int impressions, int views) {
+    public EngagementResponse(String title, String synopsis, String director, Long impressions, Long views) {
         this.title = title;
         this.synopsis = synopsis;
         this.director = director;
@@ -43,19 +43,19 @@ public class EngagementResponse {
         this.director = director;
     }
 
-    public int getImpressions() {
+    public Long getImpressions() {
         return impressions;
     }
 
-    public void setImpressions(int impressions) {
+    public void setImpressions(Long impressions) {
         this.impressions = impressions;
     }
 
-    public int getViews() {
+    public Long getViews() {
         return views;
     }
 
-    public void setViews(int views) {
+    public void setViews(Long views) {
         this.views = views;
     }
 }

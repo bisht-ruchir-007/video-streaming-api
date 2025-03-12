@@ -18,23 +18,25 @@ public class Video {
     private String content; // Mock video content as a string
 
     private boolean isDelisted = false;
-    private int impressions = 0;
-    private int views = 0;
 
     @OneToOne(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private VideoMetaData metaData;
+
+    @OneToOne(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private EngagementStatistics engagementStatistics;
+
 
     // Constructors
     public Video() {
     }
 
-    public Video(int impressions, Long videoId, String title, String content, boolean isDelisted, int views) {
-        this.impressions = impressions;
+    public Video(Long videoId, String title, String content, boolean isDelisted, VideoMetaData metaData, EngagementStatistics engagementStatistics) {
         this.videoId = videoId;
         this.title = title;
         this.content = content;
         this.isDelisted = isDelisted;
-        this.views = views;
+        this.metaData = metaData;
+        this.engagementStatistics = engagementStatistics;
     }
 
     // Getters and Setters
@@ -70,22 +72,6 @@ public class Video {
         isDelisted = delisted;
     }
 
-    public int getImpressions() {
-        return impressions;
-    }
-
-    public void setImpressions(int impressions) {
-        this.impressions = impressions;
-    }
-
-    public int getViews() {
-        return views;
-    }
-
-    public void setViews(int views) {
-        this.views = views;
-    }
-
     public VideoMetaData getMetaData() {
         return metaData;
     }
@@ -93,5 +79,13 @@ public class Video {
     public void setMetaData(VideoMetaData metaData) {
         this.metaData = metaData;
         metaData.setVideo(this);
+    }
+
+    public EngagementStatistics getEngagementStatistics() {
+        return engagementStatistics;
+    }
+
+    public void setEngagementStatistics(EngagementStatistics engagementStatistics) {
+        this.engagementStatistics = engagementStatistics;
     }
 }

@@ -1,5 +1,6 @@
 package com.app.practice.model.request;
 
+import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
 import com.app.practice.entity.VideoMetaData;
 
@@ -28,6 +29,7 @@ public class VideoRequest {
 
     public VideoRequest() {
     }
+
 
     public String getTitle() {
         return title;
@@ -112,6 +114,15 @@ public class VideoRequest {
         metaData.setVideo(video);
 
         return metaData;
+    }
+
+    public static EngagementStatistics toEngagementStatistics(Video video) {
+
+        EngagementStatistics engagementStatistics = new EngagementStatistics();
+        engagementStatistics.setVideo(video);
+
+        return engagementStatistics;
+
     }
 
 }

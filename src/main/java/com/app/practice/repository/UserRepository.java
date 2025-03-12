@@ -1,6 +1,5 @@
 package com.app.practice.repository;
 
-
 import com.app.practice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

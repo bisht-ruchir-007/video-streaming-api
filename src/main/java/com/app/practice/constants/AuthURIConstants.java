@@ -1,9 +1,19 @@
 package com.app.practice.constants;
 
+/**
+ * AuthURIConstants defines API endpoint paths for authentication-related operations.
+ */
 public class AuthURIConstants {
-    public static final String BASE_API = "/api/v1/auth";
 
-    public static final String LOGIN = BASE_API + "/login";
-    public static final String REGISTER = BASE_API + "/register";
+    // Base path for authentication-related APIs
+    public static final String AUTH_BASE_PATH = "/api/v1/auth";
 
+    // Endpoints for authentication
+    public static final String LOGIN_ENDPOINT = "/login";
+    public static final String REGISTER_ENDPOINT = "/register";
+
+    // Private constructor to prevent instantiation
+    private AuthURIConstants() {
+        throw new UnsupportedOperationException("This is a constants class and cannot be instantiated.");
+    }
 }

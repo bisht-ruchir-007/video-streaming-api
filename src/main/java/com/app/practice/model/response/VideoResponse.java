@@ -1,5 +1,6 @@
 package com.app.practice.model.response;
 
+import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
 import com.app.practice.entity.VideoMetaData;
 
@@ -14,8 +15,8 @@ public class VideoResponse {
     private int runningTime;
     private String content; // Mock video content as a string
     private boolean isDelisted = false;
-    private int impressions = 0;
-    private int views = 0;
+    private Long impressions = 0L;
+    private Long views = 0L;
 
     public VideoResponse() {
 
@@ -23,7 +24,7 @@ public class VideoResponse {
 
     public VideoResponse(String title, String synopsis, String director, String cast,
                          int yearOfRelease, String genre, int runningTime, String content,
-                         boolean isDelisted, int impressions, int views) {
+                         boolean isDelisted, Long impressions, Long views) {
         this.title = title;
         this.synopsis = synopsis;
         this.director = director;
@@ -109,23 +110,27 @@ public class VideoResponse {
         isDelisted = delisted;
     }
 
-    public int getImpressions() {
+    public Long getImpressions() {
         return impressions;
     }
 
-    public void setImpressions(int impressions) {
+    public void setImpressions(Long impressions) {
         this.impressions = impressions;
     }
 
-    public int getViews() {
+    public Long getViews() {
         return views;
     }
 
-    public void setViews(int views) {
+    public void setViews(Long views) {
         this.views = views;
     }
 
-    public static VideoResponse videoMapper(Video video, VideoMetaData videoMetaData) {
+    public static VideoResponse videoMapper(Video video) {
+
+        VideoMetaData videoMetaData = video.getMetaData();
+        EngagementStatistics engagementStatistics = video.getEngagementStatistics();
+
         return new VideoResponse(
                 video.getTitle(),
                 videoMetaData.getSynopsis(),
@@ -136,8 +141,8 @@ public class VideoResponse {
                 videoMetaData.getRunningTime(),
                 video.getContent(),
                 video.isDelisted(),
-                video.getImpressions(),
-                video.getViews()
+                engagementStatistics.getImpressions(),
+                engagementStatistics.getViews()
         );
     }
 }
