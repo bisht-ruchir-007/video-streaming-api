@@ -1,4 +1,4 @@
 package com.app.practice.entity;
 
-public class Video {
+public class VideoMetaData {
 }
