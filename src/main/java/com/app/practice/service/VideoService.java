@@ -5,6 +5,7 @@ import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
+import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.VideoResponse;
 
 import java.util.List;
@@ -25,7 +26,6 @@ public interface VideoService {
 
     List<VideoDTO> searchVideos(String director);
 
-    int getImpressions(Long id) throws VideoNotFoundException;
 
-    int getViews(Long id) throws VideoNotFoundException;
+    EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException;
 }

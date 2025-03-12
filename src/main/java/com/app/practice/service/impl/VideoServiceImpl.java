@@ -4,6 +4,7 @@ import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
+import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.VideoResponse;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.VideoService;
@@ -92,16 +93,10 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public int getImpressions(Long id) throws VideoNotFoundException {
-        return videoRepository.findById(id)
-                .orElseThrow(() -> new VideoNotFoundException("Video not found"))
-                .getImpressions();
-    }
+    public EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException {
+        return videoRepository.findById(id).map(video -> new EngagementResponse(video.getTitle(), video.getSynopsis(),
+                        video.getDirector(), video.getImpressions(), video.getViews()))
+                .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
-    @Override
-    public int getViews(Long id) throws VideoNotFoundException {
-        return videoRepository.findById(id)
-                .orElseThrow(() -> new VideoNotFoundException("Video not found"))
-                .getViews();
     }
 }
