@@ -121,6 +121,8 @@ public class VideoServiceImpl implements VideoService {
         engagementStatisticsRepository.save(engagementStatistics);
 
         existingVideo.setEngagementStatistics(engagementStatistics);
+
+
         videoRepository.save(existingVideo);
 
         VideoMetaData existingVideoMetaData = existingVideo.getMetaData();

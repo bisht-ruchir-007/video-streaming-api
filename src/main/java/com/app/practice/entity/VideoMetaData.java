@@ -26,13 +26,15 @@ public class VideoMetaData {
     public VideoMetaData() {
     }
 
-    public VideoMetaData(String synopsis, String director, String cast, int yearOfRelease, String genre, int runningTime) {
+    public VideoMetaData(Long id, String synopsis, String director, String cast, int yearOfRelease, String genre, int runningTime, Video video) {
+        this.id = id;
         this.synopsis = synopsis;
         this.director = director;
         this.cast = cast;
         this.yearOfRelease = yearOfRelease;
         this.genre = genre;
         this.runningTime = runningTime;
+        this.video = video;
     }
 
     // Getters and Setters

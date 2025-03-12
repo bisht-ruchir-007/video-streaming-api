@@ -104,16 +104,16 @@ public class VideoRequest {
     }
 
     public static VideoMetaData toVideoMetadata(VideoRequest videoRequest, Video video) {
-        VideoMetaData metaData = new VideoMetaData();
-        metaData.setDirector(videoRequest.getDirector());
-        metaData.setSynopsis(videoRequest.getSynopsis());
-        metaData.setGenre(videoRequest.getGenre());
-        metaData.setCast(videoRequest.getCast());
-        metaData.setYearOfRelease(videoRequest.getYearOfRelease());
-        metaData.setRunningTime(videoRequest.getRunningTime());
-        metaData.setVideo(video);
-
-        return metaData;
+        return new VideoMetaData(
+                null, // ID is auto-generated
+                videoRequest.getSynopsis(),
+                videoRequest.getDirector(),
+                videoRequest.getCast(),
+                videoRequest.getYearOfRelease(),
+                videoRequest.getGenre(),
+                videoRequest.getRunningTime(),
+                video
+        );
     }
 
     public static EngagementStatistics toEngagementStatistics(Video video) {
