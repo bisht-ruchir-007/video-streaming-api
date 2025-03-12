@@ -151,6 +151,16 @@ public class VideoController {
         return ResponseEntity.ok(videos);
     }
 
+    @GetMapping("/help")
+    public ResponseEntity<List<VideoDTO>> searchVideosBasedOnSearchPhrase(@RequestParam String searchPhrase) {
+        LOGGER.info("Received request to search videos by searchPhrase: {}", searchPhrase);
+
+        List<VideoDTO> videos = videoService.searchVideosBasedOnSearchPhrase(searchPhrase);
+
+        LOGGER.info("Found {} videos for searchPhrase  '{}'.", videos.size(), searchPhrase);
+        return ResponseEntity.ok(videos);
+    }
+
     /**
      * Fetches engagement statistics for a video.
      *

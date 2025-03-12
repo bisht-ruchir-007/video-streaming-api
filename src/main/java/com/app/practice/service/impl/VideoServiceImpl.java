@@ -13,10 +13,17 @@ import com.app.practice.repository.EngagementStatisticsRepository;
 import com.app.practice.repository.VideoMetaDataRepository;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.VideoService;
+import com.app.practice.utils.VideoMetaDataSpecification;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -178,4 +185,29 @@ public class VideoServiceImpl implements VideoService {
         return new EngagementResponse(video.getTitle(), metaData.getSynopsis(),
                 metaData.getDirector(), engagementStatistics.getImpressions(), engagementStatistics.getViews());
     }
+
+    @Override
+    public List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase) {
+        if (StringUtils.isBlank(searchPhrase)) {
+            throw new IllegalArgumentException("Invalid search phrase");
+        }
+
+        Specification<VideoMetaData> specification = VideoMetaDataSpecification.searchByKeyword(searchPhrase);
+        Pageable pageable = PageRequest.of(0, 10); // Fetch first 10 results
+
+        Page<VideoMetaData> videoMetaDataPage = videoMetaDataRepository.findAll(specification, pageable);
+
+        return videoMetaDataPage.getContent().stream()
+                .map(metaData -> new VideoDTO(
+                        metaData.getVideo().getVideoId(),
+                        metaData.getVideo().getTitle(),
+                        metaData.getDirector(),
+                        metaData.getCast(),
+                        metaData.getGenre(),
+                        metaData.getRunningTime()
+                ))
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
 }

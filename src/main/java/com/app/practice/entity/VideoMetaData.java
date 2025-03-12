@@ -11,12 +11,11 @@ public class VideoMetaData {
     private Long id;
 
     private String synopsis;
-
     private String director;
     private String cast;
-    private int yearOfRelease;
+    private Integer yearOfRelease;
     private String genre;
-    private int runningTime;
+    private Integer runningTime;
 
     @OneToOne
     @JoinColumn(name = "video_id", referencedColumnName = "videoId", nullable = false, unique = true)
@@ -26,7 +25,7 @@ public class VideoMetaData {
     public VideoMetaData() {
     }
 
-    public VideoMetaData(Long id, String synopsis, String director, String cast, int yearOfRelease, String genre, int runningTime, Video video) {
+    public VideoMetaData(Long id, String synopsis, String director, String cast, Integer yearOfRelease, String genre, Integer runningTime, Video video) {
         this.id = id;
         this.synopsis = synopsis;
         this.director = director;
@@ -70,11 +69,11 @@ public class VideoMetaData {
         this.cast = cast;
     }
 
-    public int getYearOfRelease() {
+    public Integer getYearOfRelease() {
         return yearOfRelease;
     }
 
-    public void setYearOfRelease(int yearOfRelease) {
+    public void setYearOfRelease(Integer yearOfRelease) {
         this.yearOfRelease = yearOfRelease;
     }
 
@@ -86,11 +85,11 @@ public class VideoMetaData {
         this.genre = genre;
     }
 
-    public int getRunningTime() {
+    public Integer getRunningTime() {
         return runningTime;
     }
 
-    public void setRunningTime(int runningTime) {
+    public void setRunningTime(Integer runningTime) {
         this.runningTime = runningTime;
     }
 
