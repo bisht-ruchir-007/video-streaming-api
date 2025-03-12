@@ -215,30 +215,6 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException {
-        logger.info("Fetching engagement stats for video ID: {}", id);
-
-        Video video = videoRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Video not found with ID: {}", id);
-                    return new VideoNotFoundException("Video not found");
-                });
-
-        EngagementStatistics stats = video.getEngagementStatistics();
-        VideoMetaData metaData = video.getMetaData();
-        if (stats == null) {
-            logger.warn("No engagement statistics found for video ID: {}", id);
-            stats = new EngagementStatistics();
-            stats.setViews(0L);
-            stats.setImpressions(0L);
-        }
-
-        return new EngagementResponse(video.getTitle(), metaData.getSynopsis(),
-                metaData.getDirector(), stats.getImpressions(), stats.getViews());
-    }
-
-
-    @Override
     public List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size) {
         if (StringUtils.isBlank(searchPhrase)) {
             logger.warn("Invalid search phrase received");

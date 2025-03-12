@@ -26,7 +26,6 @@ public interface VideoService {
 
     List<VideoDTO> searchVideos(String director, int page, int size);  // Pagination added
 
-    EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException;
-
     List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size);  // Pagination added
+
 }

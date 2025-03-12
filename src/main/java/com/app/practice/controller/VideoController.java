@@ -7,6 +7,7 @@ import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.VideoResponse;
+import com.app.practice.service.EngagementService;
 import com.app.practice.service.VideoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,11 @@ public class VideoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoController.class);
 
     private final VideoService videoService;
+    private final com.app.practice.service.EngagementService engagementService;
 
-    public VideoController(VideoService videoService) {
+    public VideoController(VideoService videoService, EngagementService engagementService) {
         this.videoService = videoService;
+        this.engagementService = engagementService;
     }
 
     /**
@@ -179,7 +182,7 @@ public class VideoController {
             throws VideoNotFoundException {
         LOGGER.info("Received request for engagement stats of video ID: {}", id);
 
-        EngagementResponse engagementResponse = videoService.getEngagementStats(id);
+        EngagementResponse engagementResponse = engagementService.getEngagementStats(id);
 
         LOGGER.info("Returning engagement stats for video ID: {}", id);
         return ResponseEntity.ok(engagementResponse);
