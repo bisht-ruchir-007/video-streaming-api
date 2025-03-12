@@ -1,6 +1,6 @@
-package com.app.practice.utils;
+package com.app.practice.constants;
 
-public class URIConstants {
+public class VideoURIConstants {
     public static final String BASE_API = "/api/v1/videos";
 
     public static final String PUBLISH = "/publish";
