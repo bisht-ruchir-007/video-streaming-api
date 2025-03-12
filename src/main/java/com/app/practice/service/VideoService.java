@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VideoService {
+
     VideoResponse publishVideo(VideoRequest video) throws VideoAlreadyPresentException;
 
     VideoResponse editVideo(Long id, VideoRequest video) throws VideoNotFoundException;
@@ -21,11 +22,11 @@ public interface VideoService {
 
     String playVideo(Long id) throws VideoNotFoundException;
 
-    List<VideoDTO> listAllVideos();
+    List<VideoDTO> listAllVideos(int page, int size);  // Pagination added
 
-    List<VideoDTO> searchVideos(String director);
+    List<VideoDTO> searchVideos(String director, int page, int size);  // Pagination added
 
     EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException;
 
-    List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase);
+    List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size);  // Pagination added
 }

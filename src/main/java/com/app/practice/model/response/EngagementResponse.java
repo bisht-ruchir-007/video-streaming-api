@@ -19,6 +19,11 @@ public class EngagementResponse {
         this.views = views;
     }
 
+    public EngagementResponse(Long views, Long impressions) {
+        this.views = views;
+        this.impressions = impressions;
+    }
+
     public String getTitle() {
         return title;
     }

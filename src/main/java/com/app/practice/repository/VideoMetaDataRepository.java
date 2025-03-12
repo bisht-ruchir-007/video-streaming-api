@@ -1,5 +1,6 @@
 package com.app.practice.repository;
 
+import com.app.practice.entity.Video;
 import com.app.practice.entity.VideoMetaData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,6 @@ public interface VideoMetaDataRepository extends JpaRepository<VideoMetaData, Lo
 
     // search for videos by director (case-insensitive)
     @Query("SELECT v FROM VideoMetaData v WHERE LOWER(v.director) = LOWER(:director)")
-    List<VideoMetaData> findByDirectorIgnoreCase(@Param("director") String director);
+    List<VideoMetaData> findByDirectorIgnoreCase(@Param("director") String director, Pageable pageable);
 
 }

@@ -126,10 +126,12 @@ public class VideoController {
      * @return ResponseEntity containing the list of all videos.
      */
     @GetMapping(VideoURIConstants.LIST_VIDEOS_ENDPOINT)
-    public ResponseEntity<List<VideoDTO>> listAllVideos() {
+    public ResponseEntity<List<VideoDTO>> listAllVideos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         LOGGER.info("Received request to list all videos");
 
-        List<VideoDTO> videos = videoService.listAllVideos();
+        List<VideoDTO> videos = videoService.listAllVideos(page, size);
 
         LOGGER.info("Returning {} videos.", videos.size());
         return ResponseEntity.ok(videos);
@@ -141,24 +143,28 @@ public class VideoController {
      * @param director The director's name.
      * @return ResponseEntity containing a list of matching videos.
      */
-    @GetMapping(VideoURIConstants.SEARCH_VIDEO_ENDPOINT)
-    public ResponseEntity<List<VideoDTO>> searchVideos(@RequestParam String director) {
+    @GetMapping(VideoURIConstants.SEARCH_BY_DIRECTOR)
+    public ResponseEntity<List<VideoDTO>> searchVideosByDirector(@RequestParam String director,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size) {
         LOGGER.info("Received request to search videos by director: {}", director);
 
-        List<VideoDTO> videos = videoService.searchVideos(director);
+        List<VideoDTO> videos = videoService.searchVideos(director, page, size);
 
         LOGGER.info("Found {} videos for director '{}'.", videos.size(), director);
         return ResponseEntity.ok(videos);
     }
 
-    @GetMapping("/help")
-    public ResponseEntity<List<VideoDTO>> searchVideosBasedOnSearchPhrase(@RequestParam String searchPhrase) {
-        LOGGER.info("Received request to search videos by searchPhrase: {}", searchPhrase);
+    @GetMapping(VideoURIConstants.SEARCH_VIDEO_ENDPOINT)
+    public ResponseEntity<List<VideoDTO>> searchVideos(
+            @RequestParam String searchPhrase,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<VideoDTO> videos = videoService.searchVideosBasedOnSearchPhrase(searchPhrase);
+        LOGGER.info("Received request to search videos - Phrase: {}, Page: {}, Size: {}", searchPhrase, page, size);
+        List<VideoDTO> results = videoService.searchVideosBasedOnSearchPhrase(searchPhrase, page, size);
 
-        LOGGER.info("Found {} videos for searchPhrase  '{}'.", videos.size(), searchPhrase);
-        return ResponseEntity.ok(videos);
+        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
     }
 
     /**
@@ -179,3 +185,6 @@ public class VideoController {
         return ResponseEntity.ok(engagementResponse);
     }
 }
+
+
+

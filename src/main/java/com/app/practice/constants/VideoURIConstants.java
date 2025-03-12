@@ -15,6 +15,7 @@ public class VideoURIConstants {
     public static final String LOAD_VIDEO_ENDPOINT = "/{id}";
     public static final String PLAY_VIDEO_ENDPOINT = "/{id}/play";
     public static final String LIST_VIDEOS_ENDPOINT = ""; // Root path (same as VIDEO_BASE_PATH)
+    public static final String SEARCH_BY_DIRECTOR = "/director";
     public static final String SEARCH_VIDEO_ENDPOINT = "/search"; // Query parameters should be handled in @RequestParam
     public static final String VIDEO_ENGAGEMENT_ENDPOINT = "/{id}/engagement";
 
