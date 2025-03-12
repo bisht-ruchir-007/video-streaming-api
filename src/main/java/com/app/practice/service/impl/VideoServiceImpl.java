@@ -2,11 +2,13 @@ package com.app.practice.service.impl;
 
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
+import com.app.practice.entity.VideoMetaData;
 import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.VideoResponse;
+import com.app.practice.repository.VideoMetaDataRepository;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.VideoService;
 import org.springframework.stereotype.Service;
@@ -16,13 +18,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-
 public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
+    private final VideoMetaDataRepository videoMetaDataRepository;
 
-    public VideoServiceImpl(VideoRepository videoRepository) {
+    public VideoServiceImpl(VideoRepository videoRepository, VideoMetaDataRepository videoMetaDataRepository) {
         this.videoRepository = videoRepository;
+        this.videoMetaDataRepository = videoMetaDataRepository;
     }
 
     @Override
@@ -32,25 +35,45 @@ public class VideoServiceImpl implements VideoService {
             throw new VideoAlreadyPresentException("Video already present with title: " + videoRequest.getTitle());
         }
 
-        // Convert request to entity and save
+        // Create and save Video entity
         Video video = VideoRequest.toVideo(videoRequest);
         videoRepository.save(video);
-        return VideoResponse.videoMapper(video);
+
+        // Create and save VideoMetaData entity
+        VideoMetaData videoMetaData = VideoRequest.toVideoMetadata(videoRequest, video);
+        videoMetaDataRepository.save(videoMetaData);
+
+        video.setMetaData(videoMetaData);
+        videoRepository.save(video);
+
+        return VideoResponse.videoMapper(video, videoMetaData);
     }
 
-
     @Override
-    public VideoResponse editVideo(Long id, VideoRequest video) throws VideoNotFoundException {
+    public VideoResponse editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
-        existingVideo.setTitle(video.getTitle());
-        existingVideo.setDirector(video.getDirector());
-        existingVideo.setGenre(video.getGenre());
+        existingVideo.setTitle(videoRequest.getTitle());
 
+        // Update VideoMetaData
+        VideoMetaData metaData = existingVideo.getMetaData();
+        if (metaData == null) {
+            metaData = new VideoMetaData();
+            metaData.setVideo(existingVideo);
+        }
+
+        metaData.setDirector(videoRequest.getDirector());
+        metaData.setGenre(videoRequest.getGenre());
+        metaData.setCast(videoRequest.getCast());
+        metaData.setYearOfRelease(videoRequest.getYearOfRelease());
+        metaData.setRunningTime(videoRequest.getRunningTime());
+
+        videoMetaDataRepository.save(metaData);
+        existingVideo.setMetaData(metaData);
         videoRepository.save(existingVideo);
 
-        return VideoResponse.videoMapper(existingVideo);
+        return VideoResponse.videoMapper(existingVideo, metaData);
     }
 
     @Override
@@ -62,7 +85,6 @@ public class VideoServiceImpl implements VideoService {
             video.setDelisted(true);
             videoRepository.save(video);
         }
-
     }
 
     @Override
@@ -71,14 +93,16 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
         if (video.isDelisted()) {
-            throw new VideoNotFoundException("Video is delist.");
+            throw new VideoNotFoundException("Video is delisted.");
         }
 
         video.setImpressions(video.getImpressions() + 1);
         videoRepository.save(video);
 
-        VideoDTO videoDTO = new VideoDTO(video.getId(), video.getTitle(), video.getDirector(),
-                video.getCast(), video.getGenre(), video.getRunningTime());
+        VideoMetaData metaData = video.getMetaData();
+
+        VideoDTO videoDTO = new VideoDTO(video.getVideoId(), video.getTitle(),
+                metaData.getDirector(), metaData.getCast(), metaData.getGenre(), metaData.getRunningTime());
 
         return Optional.of(videoDTO);
     }
@@ -89,7 +113,7 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
         if (video.isDelisted()) {
-            throw new VideoNotFoundException("Video is delist.");
+            throw new VideoNotFoundException("Video is delisted.");
         }
 
         video.setViews(video.getViews() + 1);
@@ -100,23 +124,31 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public List<VideoDTO> listAllVideos() {
         return videoRepository.findByIsDelistedFalse().stream()
-                .map(video -> new VideoDTO(video.getId(), video.getTitle(), video.getDirector(),
-                        video.getCast(), video.getGenre(), video.getRunningTime()))
+                .map(video -> {
+                    VideoMetaData metaData = video.getMetaData();
+                    return new VideoDTO(video.getVideoId(), video.getTitle(),
+                            metaData.getDirector(), metaData.getCast(),
+                            metaData.getGenre(), metaData.getRunningTime());
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<VideoDTO> searchVideos(String director) {
-        return videoRepository.findByDirectorContainingIgnoreCase(director).stream()
-                .map(video -> new VideoDTO(video.getId(), video.getTitle(), video.getDirector(),
-                        video.getCast(), video.getGenre(), video.getRunningTime()))
+        return videoMetaDataRepository.findByDirectorIgnoreCase(director).stream()
+                .map(metaData -> new VideoDTO(metaData.getVideo().getVideoId(), metaData.getVideo().getTitle(),
+                        metaData.getDirector(), metaData.getCast(), metaData.getGenre(), metaData.getRunningTime()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public EngagementResponse getEngagementStats(Long id) throws VideoNotFoundException {
-        return videoRepository.findById(id).map(video -> new EngagementResponse(video.getTitle(), video.getSynopsis(),
-                        video.getDirector(), video.getImpressions(), video.getViews()))
+        Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
+
+        VideoMetaData metaData = video.getMetaData();
+
+        return new EngagementResponse(video.getTitle(), metaData.getSynopsis(),
+                metaData.getDirector(), video.getImpressions(), video.getViews());
     }
 }

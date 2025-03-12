@@ -1,6 +1,7 @@
 package com.app.practice.model.response;
 
 import com.app.practice.entity.Video;
+import com.app.practice.entity.VideoMetaData;
 
 public class VideoResponse {
 
@@ -124,15 +125,15 @@ public class VideoResponse {
         this.views = views;
     }
 
-    public static VideoResponse videoMapper(Video video) {
+    public static VideoResponse videoMapper(Video video, VideoMetaData videoMetaData) {
         return new VideoResponse(
                 video.getTitle(),
-                video.getSynopsis(),
-                video.getDirector(),
-                video.getCast(),
-                video.getYearOfRelease(),
-                video.getGenre(),
-                video.getRunningTime(),
+                videoMetaData.getSynopsis(),
+                videoMetaData.getDirector(),
+                videoMetaData.getCast(),
+                videoMetaData.getYearOfRelease(),
+                videoMetaData.getGenre(),
+                videoMetaData.getRunningTime(),
                 video.getContent(),
                 video.isDelisted(),
                 video.getImpressions(),

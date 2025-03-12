@@ -1,6 +1,7 @@
 package com.app.practice.model.request;
 
 import com.app.practice.entity.Video;
+import com.app.practice.entity.VideoMetaData;
 
 // NOTE - Lombok is not working in my local machine
 public class VideoRequest {
@@ -95,18 +96,22 @@ public class VideoRequest {
     public static Video toVideo(VideoRequest videoResponse) {
         Video video = new Video();
         video.setTitle(videoResponse.getTitle());
-        video.setSynopsis(videoResponse.getSynopsis());
-        video.setDirector(videoResponse.getDirector());
-        video.setCast(videoResponse.getCast());
-        video.setYearOfRelease(videoResponse.getYearOfRelease());
-        video.setGenre(videoResponse.getGenre());
-        video.setRunningTime(videoResponse.getRunningTime());
         video.setContent(videoResponse.getContent());
-//        video.setDelisted(videoResponse.get);
-//        video.setImpressions(videoResponse.getImpressions());
-//        video.setViews(videoResponse.getViews());
 
         return video;
+    }
+
+    public static VideoMetaData toVideoMetadata(VideoRequest videoRequest, Video video) {
+        VideoMetaData metaData = new VideoMetaData();
+        metaData.setDirector(videoRequest.getDirector());
+        metaData.setSynopsis(videoRequest.getSynopsis());
+        metaData.setGenre(videoRequest.getGenre());
+        metaData.setCast(videoRequest.getCast());
+        metaData.setYearOfRelease(videoRequest.getYearOfRelease());
+        metaData.setRunningTime(videoRequest.getRunningTime());
+        metaData.setVideo(video);
+
+        return metaData;
     }
 
 }
