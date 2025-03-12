@@ -3,6 +3,7 @@ package com.app.practice.service;
 
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
+import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.EngagementResponse;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VideoService {
-    VideoResponse publishVideo(VideoRequest video);
+    VideoResponse publishVideo(VideoRequest video) throws VideoAlreadyPresentException;
 
     VideoResponse editVideo(Long id, VideoRequest video) throws VideoNotFoundException;
 

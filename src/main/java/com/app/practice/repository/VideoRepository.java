@@ -12,4 +12,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findByDirectorContainingIgnoreCase(String director);
 
     List<Video> findByIsDelistedFalse();
+
+    boolean existsByTitle(String title);
 }

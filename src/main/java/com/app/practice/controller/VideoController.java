@@ -2,6 +2,7 @@ package com.app.practice.controller;
 
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
+import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.EngagementResponse;
@@ -25,7 +26,7 @@ public class VideoController {
     }
 
     @PostMapping(URIConstants.PUBLISH)
-    public ResponseEntity<VideoResponse> publishVideo(@RequestBody VideoRequest video) {
+    public ResponseEntity<VideoResponse> publishVideo(@RequestBody VideoRequest video) throws VideoAlreadyPresentException {
         VideoResponse savedVideo = videoService.publishVideo(video);
         return ResponseEntity.ok(savedVideo);
     }
@@ -55,12 +56,12 @@ public class VideoController {
         return ResponseEntity.ok("Playing Video: " + content);
     }
 
-    @GetMapping(URIConstants.LIST_VIDEOS) // Now correctly mapped to "/api/v1/videos"
+    @GetMapping(URIConstants.LIST_VIDEOS)
     public ResponseEntity<List<VideoDTO>> listAllVideos() {
         return ResponseEntity.ok(videoService.listAllVideos());
     }
 
-    @GetMapping(URIConstants.SEARCH) // Now correctly mapped to "/api/v1/videos/search"
+    @GetMapping(URIConstants.SEARCH)
     public ResponseEntity<List<VideoDTO>> searchVideos(@RequestParam String director) {
         return ResponseEntity.ok(videoService.searchVideos(director));
     }

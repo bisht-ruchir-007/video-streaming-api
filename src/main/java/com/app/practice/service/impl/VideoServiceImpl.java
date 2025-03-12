@@ -2,6 +2,7 @@ package com.app.practice.service.impl;
 
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
+import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.EngagementResponse;
@@ -25,12 +26,18 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public VideoResponse publishVideo(VideoRequest videoRequest) {
+    public VideoResponse publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
+        // Check if a video with the same title already exists
+        if (videoRepository.existsByTitle(videoRequest.getTitle())) {
+            throw new VideoAlreadyPresentException("Video already present with title: " + videoRequest.getTitle());
+        }
 
+        // Convert request to entity and save
         Video video = VideoRequest.toVideo(videoRequest);
         videoRepository.save(video);
         return VideoResponse.videoMapper(video);
     }
+
 
     @Override
     public VideoResponse editVideo(Long id, VideoRequest video) throws VideoNotFoundException {
@@ -50,14 +57,23 @@ public class VideoServiceImpl implements VideoService {
     public void delistVideo(Long id) throws VideoNotFoundException {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
-        video.setDelisted(true);
-        videoRepository.save(video);
+
+        if (!video.isDelisted()) {
+            video.setDelisted(true);
+            videoRepository.save(video);
+        }
+
     }
 
     @Override
     public Optional<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
+
+        if (video.isDelisted()) {
+            throw new VideoNotFoundException("Video is delist.");
+        }
+
         video.setImpressions(video.getImpressions() + 1);
         videoRepository.save(video);
 
@@ -71,6 +87,11 @@ public class VideoServiceImpl implements VideoService {
     public String playVideo(Long id) throws VideoNotFoundException {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
+
+        if (video.isDelisted()) {
+            throw new VideoNotFoundException("Video is delist.");
+        }
+
         video.setViews(video.getViews() + 1);
         videoRepository.save(video);
         return video.getContent();
@@ -97,6 +118,5 @@ public class VideoServiceImpl implements VideoService {
         return videoRepository.findById(id).map(video -> new EngagementResponse(video.getTitle(), video.getSynopsis(),
                         video.getDirector(), video.getImpressions(), video.getViews()))
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
-
     }
 }
