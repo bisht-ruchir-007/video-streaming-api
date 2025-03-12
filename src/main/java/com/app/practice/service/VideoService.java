@@ -1,8 +1,6 @@
 package com.app.practice.service;
 
-
 import com.app.practice.dto.VideoDTO;
-import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;

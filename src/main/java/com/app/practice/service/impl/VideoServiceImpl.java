@@ -25,48 +25,41 @@ public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoMetaDataRepository videoMetaDataRepository;
-    private final EngagementStatisticsRepository engagementStatisticsRepository;
+    private final EngagementStatisticsRepository engagementStatsRepo;
 
-    public VideoServiceImpl(VideoRepository videoRepository, VideoMetaDataRepository videoMetaDataRepository, EngagementStatisticsRepository engagementStatisticsRepository) {
+    public VideoServiceImpl(VideoRepository videoRepository, VideoMetaDataRepository videoMetaDataRepository, EngagementStatisticsRepository engagmentStatsRepo) {
         this.videoRepository = videoRepository;
         this.videoMetaDataRepository = videoMetaDataRepository;
-        this.engagementStatisticsRepository = engagementStatisticsRepository;
+        this.engagementStatsRepo = engagmentStatsRepo;
     }
 
     @Override
+    @Transactional
     public VideoResponse publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
-        // Check if a video with the same title already exists
         if (videoRepository.existsByTitle(videoRequest.getTitle())) {
             throw new VideoAlreadyPresentException("Video already present with title: " + videoRequest.getTitle());
         }
 
-        // Create and save Video entity
         Video video = VideoRequest.toVideo(videoRequest);
-        videoRepository.save(video);
-
-        // Create and save VideoMetaData entity
         VideoMetaData videoMetaData = VideoRequest.toVideoMetadata(videoRequest, video);
-        videoMetaDataRepository.save(videoMetaData);
-
-        // Create and save VideoMetaData entity
-        EngagementStatistics engagementStatistics = VideoRequest.toEngagementStatistics(video);
-        engagementStatisticsRepository.save(engagementStatistics);
-
         video.setMetaData(videoMetaData);
+
+        EngagementStatistics engagementStatistics = VideoRequest.toEngagementStatistics(video);
         video.setEngagementStatistics(engagementStatistics);
+
         videoRepository.save(video);
 
         return VideoResponse.videoMapper(video);
     }
 
     @Override
+    @Transactional
     public VideoResponse editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
         existingVideo.setTitle(videoRequest.getTitle());
 
-        // Update VideoMetaData
         VideoMetaData metaData = existingVideo.getMetaData();
         if (metaData == null) {
             metaData = new VideoMetaData();
@@ -87,6 +80,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    @Transactional
     public void delistVideo(Long id) throws VideoNotFoundException {
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
@@ -108,32 +102,28 @@ public class VideoServiceImpl implements VideoService {
         }
 
         EngagementStatistics engagementStatistics = existingVideo.getEngagementStatistics();
-
-        // Update EngagementStats
-
         if (engagementStatistics == null) {
             engagementStatistics = new EngagementStatistics();
             engagementStatistics.setVideo(existingVideo);
+            engagementStatistics.setViews(1L);
+            engagementStatistics.setImpressions(1L);
+        } else {
+            engagementStatistics.setImpressions(engagementStatistics.getImpressions() + 1);
         }
 
-        // update impression
-        engagementStatistics.setViews(engagementStatistics.getImpressions() + 1);
-        engagementStatisticsRepository.save(engagementStatistics);
-
+        engagementStatsRepo.save(engagementStatistics);
         existingVideo.setEngagementStatistics(engagementStatistics);
 
-
-        videoRepository.save(existingVideo);
-
         VideoMetaData existingVideoMetaData = existingVideo.getMetaData();
-
         VideoDTO videoDTO = new VideoDTO(existingVideo.getVideoId(), existingVideo.getTitle(),
-                existingVideoMetaData.getDirector(), existingVideoMetaData.getCast(), existingVideoMetaData.getGenre(), existingVideoMetaData.getRunningTime());
+                existingVideoMetaData.getDirector(), existingVideoMetaData.getCast(),
+                existingVideoMetaData.getGenre(), existingVideoMetaData.getRunningTime());
 
         return Optional.of(videoDTO);
     }
 
     @Override
+    @Transactional
     public String playVideo(Long id) throws VideoNotFoundException {
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
@@ -143,17 +133,13 @@ public class VideoServiceImpl implements VideoService {
         }
 
         EngagementStatistics engagementStatistics = existingVideo.getEngagementStatistics();
-
-        // Update EngagementStats
-
         if (engagementStatistics == null) {
             engagementStatistics = new EngagementStatistics();
             engagementStatistics.setVideo(existingVideo);
         }
 
-        // Update View Count
         engagementStatistics.setViews(engagementStatistics.getViews() + 1);
-        engagementStatisticsRepository.save(engagementStatistics);
+        engagementStatsRepo.save(engagementStatistics);
 
         existingVideo.setEngagementStatistics(engagementStatistics);
         videoRepository.save(existingVideo);
@@ -187,8 +173,9 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new VideoNotFoundException("Video not found"));
 
         VideoMetaData metaData = video.getMetaData();
+        EngagementStatistics engagementStatistics = video.getEngagementStatistics();
 
         return new EngagementResponse(video.getTitle(), metaData.getSynopsis(),
-                metaData.getDirector(), video.getEngagementStatistics().getImpressions(), video.getEngagementStatistics().getViews());
+                metaData.getDirector(), engagementStatistics.getImpressions(), engagementStatistics.getViews());
     }
 }
