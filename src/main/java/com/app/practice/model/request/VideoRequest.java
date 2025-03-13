@@ -4,7 +4,14 @@ import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
 import com.app.practice.entity.VideoMetaData;
 
-// NOTE - Lombok is not working in my local machine
+/**
+ * Model class for handling video-related requests. This class is used to pass the video details,
+ * such as title, synopsis, director, etc., when creating or updating a video.
+ * <p>
+ * Author: Ruchir Bisht
+ * <p>
+ * NOTE - Lombok is not working in my local machine, so getter, setter, and constructors are manually created.
+ */
 public class VideoRequest {
 
     private String title;
@@ -16,6 +23,18 @@ public class VideoRequest {
     private int runningTime;
     private String content;
 
+    /**
+     * Constructor to create a VideoRequest object with the provided video details.
+     *
+     * @param title         the title of the video.
+     * @param synopsis      the synopsis of the video.
+     * @param director      the director of the video.
+     * @param cast          the cast of the video.
+     * @param yearOfRelease the year the video was released.
+     * @param genre         the genre of the video.
+     * @param runningTime   the running time of the video.
+     * @param content       the content of the video.
+     */
     public VideoRequest(String title, String synopsis, String director, String cast, int yearOfRelease, String genre, int runningTime, String content) {
         this.title = title;
         this.synopsis = synopsis;
@@ -27,9 +46,13 @@ public class VideoRequest {
         this.content = content;
     }
 
+    /**
+     * Default constructor.
+     */
     public VideoRequest() {
     }
 
+    // Getter and setter methods for each field
 
     public String getTitle() {
         return title;
@@ -95,14 +118,27 @@ public class VideoRequest {
         this.content = content;
     }
 
-    public static Video toVideo(VideoRequest videoResponse) {
+    /**
+     * Converts a VideoRequest object to a Video entity.
+     *
+     * @param videoRequest the VideoRequest object.
+     * @return a Video entity.
+     */
+    public static Video toVideo(VideoRequest videoRequest) {
         Video video = new Video();
-        video.setTitle(videoResponse.getTitle());
-        video.setContent(videoResponse.getContent());
+        video.setTitle(videoRequest.getTitle());
+        video.setContent(videoRequest.getContent());
 
         return video;
     }
 
+    /**
+     * Converts a VideoRequest object to a VideoMetaData entity.
+     *
+     * @param videoRequest the VideoRequest object.
+     * @param video        the associated Video entity.
+     * @return a VideoMetaData entity.
+     */
     public static VideoMetaData toVideoMetadata(VideoRequest videoRequest, Video video) {
         return new VideoMetaData(
                 null, // ID is auto-generated
@@ -116,13 +152,16 @@ public class VideoRequest {
         );
     }
 
+    /**
+     * Converts a Video entity to an EngagementStatistics entity.
+     *
+     * @param video the associated Video entity.
+     * @return an EngagementStatistics entity.
+     */
     public static EngagementStatistics toEngagementStatistics(Video video) {
-
         EngagementStatistics engagementStatistics = new EngagementStatistics();
         engagementStatistics.setVideo(video);
 
         return engagementStatistics;
-
     }
-
 }

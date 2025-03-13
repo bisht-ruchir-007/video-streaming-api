@@ -4,6 +4,12 @@ import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
 import com.app.practice.entity.VideoMetaData;
 
+/**
+ * This class represents the response structure for video details.
+ * It contains the necessary information about the video, its metadata, and engagement statistics.
+ * <p>
+ * Author: Ruchir Bisht
+ */
 public class VideoResponse {
 
     private String title;
@@ -18,10 +24,27 @@ public class VideoResponse {
     private Long impressions = 0L;
     private Long views = 0L;
 
+    /**
+     * Default constructor.
+     */
     public VideoResponse() {
-
     }
 
+    /**
+     * Constructor to create a VideoResponse with all necessary fields.
+     *
+     * @param title         the title of the video.
+     * @param synopsis      the synopsis of the video.
+     * @param director      the director of the video.
+     * @param cast          the cast of the video.
+     * @param yearOfRelease the year the video was released.
+     * @param genre         the genre of the video.
+     * @param runningTime   the running time of the video.
+     * @param content       the mock content of the video.
+     * @param isDelisted    whether the video is delisted.
+     * @param impressions   the number of impressions the video has received.
+     * @param views         the number of views the video has received.
+     */
     public VideoResponse(String title, String synopsis, String director, String cast,
                          int yearOfRelease, String genre, int runningTime, String content,
                          boolean isDelisted, Long impressions, Long views) {
@@ -37,6 +60,8 @@ public class VideoResponse {
         this.impressions = impressions;
         this.views = views;
     }
+
+    // Getter and Setter methods for each field
 
     public String getTitle() {
         return title;
@@ -126,8 +151,13 @@ public class VideoResponse {
         this.views = views;
     }
 
+    /**
+     * Maps a Video entity to a VideoResponse.
+     *
+     * @param video the Video entity to map.
+     * @return a VideoResponse object containing the mapped details.
+     */
     public static VideoResponse videoMapper(Video video) {
-
         VideoMetaData videoMetaData = video.getMetaData();
         EngagementStatistics engagementStatistics = video.getEngagementStatistics();
 
