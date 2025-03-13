@@ -1,4 +1,4 @@
-package com.app.practice.service.impl;
+package com.app.practice.service.impl.video;
 
 import com.app.practice.constants.ModuleConstants;
 import com.app.practice.dto.VideoDTO;
@@ -10,7 +10,6 @@ import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.model.response.VideoResponse;
-import com.app.practice.repository.EngagementStatisticsRepository;
 import com.app.practice.repository.VideoMetaDataRepository;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.VideoService;
@@ -45,7 +44,6 @@ public class VideoServiceImpl implements VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoMetaDataRepository videoMetaDataRepository;
-    private final EngagementStatisticsRepository engagementStatsRepo;
 
     /**
      * Publishes a new video after validating that it does not already exist.
@@ -151,89 +149,6 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);  // HttpStatus.OK remains correct
-    }
-
-    /**
-     * Loads the details of a specific video by its ID.
-     *
-     * @param id the ID of the video to be loaded
-     * @return a response containing the video details
-     * @throws VideoNotFoundException if the video is delisted or not found
-     */
-    @Override
-    @Transactional
-    public GenericResponse<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
-        logger.info(ModuleConstants.LOADING_VIDEO + id);
-
-        Video video = videoRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
-                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
-                });
-
-        if (video.isDelisted()) {
-            logger.warn(ModuleConstants.VIDEO_DELISTED + video.getTitle());
-            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
-        }
-
-        // Update engagement statistics
-        EngagementStatistics engagementStats = video.getEngagementStatistics();
-        if (engagementStats == null) {
-            engagementStats = new EngagementStatistics();
-            engagementStats.setVideo(video);
-            engagementStats.setViews(1L);
-            engagementStats.setImpressions(1L);
-        } else {
-            engagementStats.setImpressions(engagementStats.getImpressions() + 1);
-        }
-
-        engagementStatsRepo.save(engagementStats);
-        video.setEngagementStatistics(engagementStats);
-
-        // Return video details in DTO format
-        VideoMetaData metaData = video.getMetaData();
-        VideoDTO videoDTO = new VideoDTO(video.getVideoId(), video.getTitle(),
-                metaData.getDirector(), metaData.getCast(),
-                metaData.getGenre(), metaData.getRunningTime());
-        return GenericResponse.success(videoDTO, HttpStatus.OK);
-    }
-
-    /**
-     * Plays a specific video by its ID and increments the view count.
-     *
-     * @param id the ID of the video to be played
-     * @return a response indicating the success of the play operation
-     * @throws VideoNotFoundException if the video is delisted or not found
-     */
-    @Override
-    @Transactional
-    public GenericResponse<String> playVideo(Long id) throws VideoNotFoundException {
-        logger.info(ModuleConstants.PLAYING_VIDEO + id);
-
-        Video video = videoRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
-                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
-                });
-
-        if (video.isDelisted()) {
-            logger.warn(ModuleConstants.VIDEO_DELISTED + video.getTitle());
-            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
-        }
-
-        // Increment the view count and save engagement statistics
-        EngagementStatistics engagementStats = video.getEngagementStatistics();
-        if (engagementStats == null) {
-            engagementStats = new EngagementStatistics();
-            engagementStats.setVideo(video);
-        }
-
-        engagementStats.setViews(engagementStats.getViews() + 1);
-        engagementStatsRepo.save(engagementStats);
-        video.setEngagementStatistics(engagementStats);
-        videoRepository.save(video);
-
-        return GenericResponse.success(video.getContent(), HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
     /**

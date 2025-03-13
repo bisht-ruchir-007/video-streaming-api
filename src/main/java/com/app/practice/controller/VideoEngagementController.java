@@ -8,6 +8,7 @@ import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.EngagementStrategyService;
 import com.app.practice.service.VideoService;
+import com.app.practice.service.VideoStreamService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +31,16 @@ public class VideoEngagementController {
 
     private final VideoService videoService;
     private final EngagementStrategyService engagementService;
+    private final VideoStreamService videoStreamService;
 
 
     /**
      * Loads video content by ID.
      */
     @GetMapping(VideoURIConstants.LOAD_VIDEO_ENDPOINT)
-    public ResponseEntity<GenericResponse<String>> loadVideoContent(@PathVariable Long id) throws VideoNotFoundException {
+    public ResponseEntity<GenericResponse<VideoDTO>> loadVideoContent(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to load video content with ID: {}", id);
-        GenericResponse<String> videoContent = videoService.playVideo(id);
+        GenericResponse<VideoDTO> videoContent = videoStreamService.loadVideo(id);
         LOGGER.info("Loading video with ID: {}", id);
         return ResponseEntity.ok(videoContent);
     }
@@ -49,7 +51,7 @@ public class VideoEngagementController {
     @GetMapping(VideoURIConstants.PLAY_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<String>> playVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to play video with ID: {}", id);
-        GenericResponse<String> videoContent = videoService.playVideo(id);
+        GenericResponse<String> videoContent = videoStreamService.playVideo(id);
         LOGGER.info("Playing video with ID: {}", id);
         return ResponseEntity.ok(videoContent);
     }

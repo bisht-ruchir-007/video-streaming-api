@@ -1,4 +1,4 @@
-package com.app.practice.service.impl;
+package com.app.practice.service.impl.auth;
 
 import com.app.practice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

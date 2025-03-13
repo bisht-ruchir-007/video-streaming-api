@@ -14,8 +14,11 @@ package com.app.practice.configuration;
  */
 
 import com.app.practice.service.EngagementStrategyService;
-import com.app.practice.service.impl.DBEngagementStrategyServiceImpl;
-import com.app.practice.service.impl.KafkaEngagementStrategyServiceImpl;
+import com.app.practice.service.VideoStreamService;
+import com.app.practice.service.impl.engagement.DBEngagementStrategyServiceImpl;
+import com.app.practice.service.impl.engagement.KafkaEngagementStrategyServiceImpl;
+import com.app.practice.service.impl.streaming.DBVideoStreamService;
+import com.app.practice.service.impl.streaming.KafkaVideoStreamService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -51,4 +54,19 @@ public class EngagementStrategyConfig {
     public EngagementStrategyService kafkaEngagementStrategy(KafkaEngagementStrategyServiceImpl kafkaEngagementStrategyImpl) {
         return kafkaEngagementStrategyImpl;
     }
+
+    @Bean
+    @Profile("dev")
+    @Primary
+    public VideoStreamService dbVideoStreamService(DBVideoStreamService dbVideoStreamService) {
+        return dbVideoStreamService;
+    }
+
+    @Bean
+    @Profile("prod")
+    public VideoStreamService kafkaVideoStreamService(KafkaVideoStreamService kafkaVideoStreamService) {
+        return kafkaVideoStreamService;
+    }
+
+
 }
