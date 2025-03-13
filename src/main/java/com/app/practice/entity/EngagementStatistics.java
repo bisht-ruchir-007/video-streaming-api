@@ -10,7 +10,10 @@ import jakarta.persistence.*;
  * Note: Lombok is not working on the local machine; hence, getter, setter, and constructors are manually created.
  */
 @Entity
-@Table(name = "engagement_statistics")
+@Table(
+        name = "engagement_statistics",
+        indexes = @Index(name = "idx_video_id", columnList = "video_id")
+)
 public class EngagementStatistics {
 
     // Primary key of the EngagementStatistics table

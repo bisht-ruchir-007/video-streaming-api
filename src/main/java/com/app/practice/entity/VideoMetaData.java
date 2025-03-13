@@ -11,7 +11,10 @@ import jakarta.persistence.*;
  * Note: Lombok is not working on the local machine; hence, getter, setter, and constructors are manually created.
  */
 @Entity
-@Table(name = "videos_meta_data")
+@Table(name = "videos_meta_data", indexes = {
+        @Index(name = "idx_year_of_release", columnList = "year_of_release"),
+        @Index(name = "idx_genre", columnList = "genre")
+})
 public class VideoMetaData {
 
     @Id
