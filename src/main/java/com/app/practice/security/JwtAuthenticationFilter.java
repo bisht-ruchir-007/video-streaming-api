@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,21 +23,11 @@ import java.io.IOException;
  * Author: Ruchir Bisht
  */
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-
-    /**
-     * Constructor to initialize JwtAuthenticationFilter with its dependencies.
-     *
-     * @param jwtUtil            the utility class that handles JWT operations (e.g., token extraction and validation).
-     * @param userDetailsService the service that loads user details by username.
-     */
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
-        this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-    }
 
     /**
      * Filters incoming HTTP requests to check if they contain a valid JWT token in the header.

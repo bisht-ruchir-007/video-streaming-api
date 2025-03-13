@@ -1,5 +1,6 @@
 package com.app.practice.utils;
 
+import com.app.practice.constants.QueryParams;
 import com.app.practice.entity.VideoMetaData;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -28,9 +29,9 @@ public class VideoMetaDataSpecification {
 
             // Return an 'OR' condition to search for the keyword in director, genre, or cast fields
             return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("director")), likePattern),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("genre")), likePattern),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("cast")), likePattern)
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(QueryParams.DIRECTOR.toString())), likePattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(QueryParams.GENRE.toString())), likePattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(QueryParams.CAST.toString())), likePattern)
             );
         };
     }
