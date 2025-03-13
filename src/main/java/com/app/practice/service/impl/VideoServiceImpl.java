@@ -1,5 +1,6 @@
 package com.app.practice.service.impl;
 
+import com.app.practice.constants.ModuleConstants;
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
@@ -7,7 +8,7 @@ import com.app.practice.entity.VideoMetaData;
 import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
-import com.app.practice.model.response.EngagementResponse;
+import com.app.practice.model.response.GenericResponse;
 import com.app.practice.model.response.VideoResponse;
 import com.app.practice.repository.EngagementStatisticsRepository;
 import com.app.practice.repository.VideoMetaDataRepository;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,12 +48,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    public VideoResponse publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
-        logger.info("Publishing new video: {}", videoRequest.getTitle());
+    public GenericResponse<VideoResponse> publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
+        logger.info(ModuleConstants.PUBLISHING_VIDEO + videoRequest.getTitle());
 
         if (videoRepository.existsByTitle(videoRequest.getTitle())) {
-            logger.error("Video already exists with title: {}", videoRequest.getTitle());
-            throw new VideoAlreadyPresentException("Video already present with title: " + videoRequest.getTitle());
+            logger.error(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
+            throw new VideoAlreadyPresentException(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
         }
 
         Video video = VideoRequest.toVideo(videoRequest);
@@ -62,20 +64,21 @@ public class VideoServiceImpl implements VideoService {
         video.setEngagementStatistics(engagementStatistics);
 
         videoRepository.save(video);
-        logger.info("Video published successfully: {}", videoRequest.getTitle());
+        logger.info(ModuleConstants.VIDEO_PUBLISHED_SUCCESSFULLY + videoRequest.getTitle());
 
-        return VideoResponse.videoMapper(video);
+        VideoResponse videoDTO = VideoResponse.videoMapper(video);
+        return GenericResponse.success(videoDTO, HttpStatus.CREATED);
     }
 
     @Override
     @Transactional
-    public VideoResponse editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
-        logger.info("Editing video with ID: {}", id);
+    public GenericResponse<VideoResponse> editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
+        logger.info(ModuleConstants.EDITING_VIDEO + id);
 
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Video not found with ID: {}", id);
-                    return new VideoNotFoundException("Video not found");
+                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
+                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
         existingVideo.setTitle(videoRequest.getTitle());
@@ -96,42 +99,45 @@ public class VideoServiceImpl implements VideoService {
         existingVideo.setMetaData(metaData);
         videoRepository.save(existingVideo);
 
-        logger.info("Video edited successfully: {}", videoRequest.getTitle());
-        return VideoResponse.videoMapper(existingVideo);
+        logger.info(ModuleConstants.VIDEO_EDITED_SUCCESSFULLY + videoRequest.getTitle());
+        VideoResponse videoDTO = VideoResponse.videoMapper(existingVideo);
+        return GenericResponse.success(videoDTO, HttpStatus.OK);  // Changed to HttpStatus.OK
     }
 
     @Override
     @Transactional
-    public void delistVideo(Long id) throws VideoNotFoundException {
-        logger.info("Delisting video with ID: {}", id);
+    public GenericResponse<String> delistVideo(Long id) throws VideoNotFoundException {
+        logger.info(ModuleConstants.DELISTING_VIDEO + id);
 
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Video not found with ID: {}", id);
-                    return new VideoNotFoundException("Video not found");
+                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
+                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
         if (!video.isDelisted()) {
             video.setDelisted(true);
             videoRepository.save(video);
-            logger.info("Video successfully delisted: {}", video.getTitle());
+            logger.info(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY + video.getTitle());
         }
+
+        return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);  // Changed to HttpStatus.OK
     }
 
     @Override
     @Transactional
-    public Optional<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
-        logger.info("Loading video with ID: {}", id);
+    public GenericResponse<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
+        logger.info(ModuleConstants.LOADING_VIDEO + id);
 
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Video not found with ID: {}", id);
-                    return new VideoNotFoundException("Video not found");
+                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
+                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
         if (video.isDelisted()) {
-            logger.warn("Video is delisted: {}", video.getTitle());
-            throw new VideoNotFoundException("Video is delisted.");
+            logger.warn(ModuleConstants.VIDEO_DELISTED + video.getTitle());
+            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
         }
 
         EngagementStatistics engagementStats = video.getEngagementStatistics();
@@ -148,25 +154,26 @@ public class VideoServiceImpl implements VideoService {
         video.setEngagementStatistics(engagementStats);
 
         VideoMetaData metaData = video.getMetaData();
-        return Optional.of(new VideoDTO(video.getVideoId(), video.getTitle(),
+        VideoDTO videoDTO = new VideoDTO(video.getVideoId(), video.getTitle(),
                 metaData.getDirector(), metaData.getCast(),
-                metaData.getGenre(), metaData.getRunningTime()));
+                metaData.getGenre(), metaData.getRunningTime());
+        return GenericResponse.success(videoDTO, HttpStatus.OK);
     }
 
     @Override
     @Transactional
-    public String playVideo(Long id) throws VideoNotFoundException {
-        logger.info("Playing video with ID: {}", id);
+    public GenericResponse<String> playVideo(Long id) throws VideoNotFoundException {
+        logger.info(ModuleConstants.PLAYING_VIDEO + id);
 
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Video not found with ID: {}", id);
-                    return new VideoNotFoundException("Video not found");
+                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
+                    return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
         if (video.isDelisted()) {
-            logger.warn("Video is delisted: {}", video.getTitle());
-            throw new VideoNotFoundException("Video is delisted.");
+            logger.warn(ModuleConstants.VIDEO_DELISTED + video.getTitle());
+            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
         }
 
         EngagementStatistics engagementStats = video.getEngagementStatistics();
@@ -180,45 +187,48 @@ public class VideoServiceImpl implements VideoService {
         video.setEngagementStatistics(engagementStats);
         videoRepository.save(video);
 
-        return video.getContent();
+        return GenericResponse.success(video.getContent(), HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
     @Override
-    public List<VideoDTO> listAllVideos(int page, int size) {
-        logger.info("Listing all videos (Page: {}, Size: {})", page, size);
+    public GenericResponse<List<VideoDTO>> listAllVideos(int page, int size) {
+        logger.info(ModuleConstants.LISTING_ALL_VIDEOS, page, size);
         Pageable pageable = PageRequest.of(page, size);
 
-        return videoRepository.findByIsDelistedFalse(pageable)
+        List<VideoDTO> videoDTOList = videoRepository.findByIsDelistedFalse(pageable)
                 .map(video -> new VideoDTO(video.getVideoId(), video.getTitle(),
                         video.getMetaData().getDirector(), video.getMetaData().getCast(),
                         video.getMetaData().getGenre(), video.getMetaData().getRunningTime()))
                 .getContent();
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
     @Override
-    public List<VideoDTO> searchVideos(String director, int page, int size) {
-        logger.info("Searching videos directed by: {} (Page: {}, Size: {})", director, page, size);
+    public GenericResponse<List<VideoDTO>> searchVideos(String director, int page, int size) {
+        logger.info(ModuleConstants.SEARCHING_VIDEOS, director, page, size);
 
         if (StringUtils.isBlank(director)) {
-            logger.warn("Invalid director name received for search");
-            throw new IllegalArgumentException("Director name cannot be empty.");
+            logger.warn(ModuleConstants.INVALID_DIRECTOR_NAME);
+            return GenericResponse.error(ModuleConstants.INVALID_DIRECTOR_NAME, HttpStatus.BAD_REQUEST);  // HttpStatus.BAD_REQUEST remains correct
         }
 
         Pageable pageable = PageRequest.of(page, size);
 
         List<VideoMetaData> videos = videoMetaDataRepository.findByDirectorIgnoreCase(director, pageable);
 
-        return videos.stream()
+        List<VideoDTO> videoDTOList = videos.stream()
                 .map(metaData -> new VideoDTO(metaData.getVideo().getVideoId(), metaData.getVideo().getTitle(),
                         metaData.getDirector(), metaData.getCast(), metaData.getGenre(), metaData.getRunningTime()))
                 .collect(Collectors.toList());
+
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
     @Override
-    public List<VideoDTO> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size) {
+    public GenericResponse<List<VideoDTO>> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size) {
         if (StringUtils.isBlank(searchPhrase)) {
-            logger.warn("Invalid search phrase received");
-            throw new IllegalArgumentException("Invalid search phrase");
+            logger.warn(ModuleConstants.INVALID_SEARCH_PHRASE);
+            return GenericResponse.error(ModuleConstants.INVALID_SEARCH_PHRASE, HttpStatus.BAD_REQUEST);  // HttpStatus.BAD_REQUEST remains correct
         }
 
         logger.info("Searching videos with phrase: {} (Page: {}, Size: {})", searchPhrase, page, size);
@@ -227,10 +237,13 @@ public class VideoServiceImpl implements VideoService {
 
         Page<VideoMetaData> videoMetaDataPage = videoMetaDataRepository.findAll(specification, pageable);
 
-        return videoMetaDataPage.getContent().stream()
+        List<VideoDTO> videoDTOList = videoMetaDataPage.getContent().stream()
                 .map(metaData -> new VideoDTO(metaData.getVideo().getVideoId(), metaData.getVideo().getTitle(),
                         metaData.getDirector(), metaData.getCast(), metaData.getGenre(), metaData.getRunningTime()))
                 .filter(Objects::nonNull)
                 .toList();
+
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
+
 }

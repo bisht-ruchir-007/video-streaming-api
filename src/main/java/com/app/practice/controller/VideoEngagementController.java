@@ -5,6 +5,7 @@ import com.app.practice.constants.VideoURIConstants;
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.response.EngagementResponse;
+import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.EngagementService;
 import com.app.practice.service.VideoService;
 import org.slf4j.Logger;
@@ -28,30 +29,30 @@ public class VideoEngagementController {
     }
 
     @GetMapping(VideoURIConstants.PLAY_VIDEO_ENDPOINT)
-    public ResponseEntity<String> playVideo(@PathVariable Long id) throws VideoNotFoundException {
+    public ResponseEntity<GenericResponse<String>> playVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to play video with ID: {}", id);
-        String content = videoService.playVideo(id);
+        GenericResponse<String> videoContent = videoService.playVideo(id);
         LOGGER.info("Playing video with ID: {}", id);
-        return ResponseEntity.ok("Playing Video: " + content);
+        return ResponseEntity.ok(videoContent);
     }
 
     @GetMapping(VideoURIConstants.SEARCH_BY_DIRECTOR)
-    public ResponseEntity<List<VideoDTO>> searchVideosByDirector(@RequestParam String director,
-                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideosByDirector(@RequestParam String director,
+                                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                                  @RequestParam(defaultValue = "10") int size) {
         LOGGER.info("Received request to search videos by director: {}", director);
-        List<VideoDTO> videos = videoService.searchVideos(director, page, size);
-        LOGGER.info("Found {} videos for director '{}'.", videos.size(), director);
+        GenericResponse<List<VideoDTO>> videos = videoService.searchVideos(director, page, size);
+        LOGGER.info("Found {} videos for director '{}'.", videos.getData().size(), director);
         return ResponseEntity.ok(videos);
     }
 
     @GetMapping(VideoURIConstants.SEARCH_VIDEO_ENDPOINT)
-    public ResponseEntity<List<VideoDTO>> searchVideos(@RequestParam String searchPhrase,
-                                                       @RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideos(@RequestParam String searchPhrase,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size) {
         LOGGER.info("Received request to search videos - Phrase: {}, Page: {}, Size: {}", searchPhrase, page, size);
-        List<VideoDTO> results = videoService.searchVideosBasedOnSearchPhrase(searchPhrase, page, size);
-        return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
+        GenericResponse<List<VideoDTO>> videosList = videoService.searchVideosBasedOnSearchPhrase(searchPhrase, page, size);
+        return videosList.getData().isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(videosList);
     }
 
     /**
@@ -62,14 +63,14 @@ public class VideoEngagementController {
      * @throws VideoNotFoundException If the video is not found.
      */
     @GetMapping(StatsURIConstants.STATS_ENGAGEMENT_ENDPOINT)
-    public ResponseEntity<EngagementResponse> getEngagementStats(@PathVariable Long id)
+    public ResponseEntity<GenericResponse<EngagementResponse>> getEngagementStats(@PathVariable Long id)
             throws VideoNotFoundException {
         LOGGER.info("Received request for engagement stats of video ID: {}", id);
 
-        EngagementResponse engagementResponse = engagementService.getEngagementStats(id);
+        GenericResponse<EngagementResponse> engagementStatsResponse = engagementService.getEngagementStats(id);
 
         LOGGER.info("Returning engagement stats for video ID: {}", id);
-        return ResponseEntity.ok(engagementResponse);
+        return ResponseEntity.ok(engagementStatsResponse);
     }
 
     // Add other engagement-related endpoints as necessary (e.g., tracking engagement)
