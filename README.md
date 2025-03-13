@@ -49,7 +49,7 @@ JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hou
 
 ## Features
 - **Video Content Retrieval**: Fetch video metadata and engagement statistics for a given video ID.
-- **Search Video Metadata**: Search for video metadata (title, director, genre) with pagination.
+- **Search Video Metadata**: Search for video metadata (director, genre, cast) with pagination.
 - **Track Engagement**: Track video engagement (impressions, views).
 - **Soft Delete Video**: Soft delete videos while keeping them in the database.
 - **Publish Video**: Add videos to the platform.
