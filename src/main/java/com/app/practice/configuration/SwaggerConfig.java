@@ -26,32 +26,26 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Video-Streaming: API'S",  // Title of the API documentation
-                version = "1.0",  // Version of the API
-                description = "API Documentation for Video-Streaming-backend."  // Brief description of the API
+                title = "Video-Streaming: BACKEND API'S",
+                version = "1.0",
+                description = "API Documentation for Video Engagement & Management System, a robust Spring Boot" +
+                        " application designed to handle video content, metadata management, and user engagement " +
+                        "analytics for a video streaming platform."
         )
 )
 @SecurityScheme(
-        name = "bearerAuth",  // The name of the security scheme
-        type = SecuritySchemeType.HTTP,  // The security scheme type (HTTP)
-        bearerFormat = "JWT",  // The format of the bearer token (JWT)
-        scheme = "Bearer",  // Scheme used in the Authorization header
-        in = SecuritySchemeIn.HEADER  // The location of the token (in the HTTP header)
+        name = "Bearer Authentication",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "Bearer",
+        in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfig {
-
-    /**
-     * Bean configuration for the Swagger API documentation.
-     * This groups the APIs under a "default" group and specifies the package
-     * to scan for controllers (which contains the endpoints to document).
-     *
-     * @return A GroupedOpenApi instance with the defined group and package to scan.
-     */
     @Bean
     public GroupedOpenApi api() {
         return GroupedOpenApi.builder()
-                .group("default")  // The name of the group for the APIs
-                .packagesToScan("com.api.practice.controllers")  // The package to scan for REST controllers
+                .group("default")
+                .packagesToScan("com.app.practice.controller")
                 .build();
     }
 }

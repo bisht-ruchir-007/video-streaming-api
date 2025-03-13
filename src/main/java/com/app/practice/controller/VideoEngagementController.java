@@ -9,6 +9,8 @@ import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.EngagementStrategyService;
 import com.app.practice.service.VideoService;
 import com.app.practice.service.VideoStreamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +35,11 @@ public class VideoEngagementController {
     private final EngagementStrategyService engagementService;
     private final VideoStreamService videoStreamService;
 
-
     /**
      * Loads video content by ID.
      */
     @GetMapping(VideoURIConstants.LOAD_VIDEO_ENDPOINT)
+    @Operation(summary = "Loads video content by ID.", description = "Loads video content by ID.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<VideoDTO>> loadVideoContent(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to load video content with ID: {}", id);
         GenericResponse<VideoDTO> videoContent = videoStreamService.loadVideo(id);
@@ -49,6 +51,7 @@ public class VideoEngagementController {
      * Plays video by ID.
      */
     @GetMapping(VideoURIConstants.PLAY_VIDEO_ENDPOINT)
+    @Operation(summary = "Plays video by ID.", description = "Plays(streams) video by ID.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<String>> playVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to play video with ID: {}", id);
         GenericResponse<String> videoContent = videoStreamService.playVideo(id);
@@ -60,6 +63,7 @@ public class VideoEngagementController {
      * Searches videos by director.
      */
     @GetMapping(VideoURIConstants.SEARCH_BY_DIRECTOR)
+    @Operation(summary = "Searches videos by director", description = "Searches videos by director's name.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideosByDirector(@RequestParam String director,
                                                                                   @RequestParam(defaultValue = "0") int page,
                                                                                   @RequestParam(defaultValue = "10") int size) {
@@ -73,6 +77,7 @@ public class VideoEngagementController {
      * Searches videos based on a search phrase.
      */
     @GetMapping(VideoURIConstants.SEARCH_VIDEO_ENDPOINT)
+    @Operation(summary = "Searches videos on search phrase.", description = "Searches videos based on a search phrase. (Director/Genre/Cast)", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideos(@RequestParam String searchPhrase,
                                                                         @RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "10") int size) {
@@ -89,6 +94,7 @@ public class VideoEngagementController {
      * @throws VideoNotFoundException If the video is not found.
      */
     @GetMapping(StatsURIConstants.STATS_ENGAGEMENT_ENDPOINT)
+    @Operation(summary = "Fetches engagement statistics for a video.", description = " Fetches engagement statistics for a video i.e. impressions &  views", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<EngagementResponse>> getEngagementStats(@PathVariable Long id)
             throws VideoNotFoundException {
         LOGGER.info("Received request for engagement stats of video ID: {}", id);

@@ -22,10 +22,8 @@ public class PermittedEndpointsConfig {
     // Array of RequestMatchers that specify the permitted endpoints.
     public static final RequestMatcher[] PERMITTED_MATCHERS = new RequestMatcher[]{
             // Swagger and API documentation related endpoints
-            //new AntPathRequestMatcher("/v1/api-docs/**"), // OpenAPI documentation
-            // new AntPathRequestMatcher("/swagger-ui/**"), // Swagger UI interface
-            // new AntPathRequestMatcher("/swagger-resources/**"), // Swagger resources
-            // new AntPathRequestMatcher("/webjars/**"), // Webjar resources for Swagger UI
+            new AntPathRequestMatcher("/v3/api-docs/**"), // OpenAPI documentation
+            new AntPathRequestMatcher("/swagger-ui/**"), // Swagger UI interface
             // Authentication base path (use correct version)
             new AntPathRequestMatcher(AuthURIConstants.AUTH_BASE_PATH + "/**") // Ensure VERSION is correctly replaced
     };
