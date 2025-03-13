@@ -5,6 +5,9 @@ import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(AuthURIConstants.AUTH_BASE_PATH)
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "APIs for user authentication and token management")
 public class AuthController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
@@ -29,10 +33,13 @@ public class AuthController {
      *
      * @param userCredentials The user's registration details.
      * @return ResponseEntity with a success message and JWT token.
-     * @throws IllegalArgumentException if the username is already taken.
      */
+    @Operation(summary = "Register a new user", description = "Registers a new user and returns a JWT token")
     @PostMapping(AuthURIConstants.REGISTER_ENDPOINT)
-    public ResponseEntity<GenericResponse<?>> register(@RequestBody UserCredentials userCredentials) {
+    public ResponseEntity<GenericResponse<?>> register(
+            @Parameter(description = "User credentials for registration", required = true)
+            @RequestBody UserCredentials userCredentials) {
+
         LOGGER.info("User registration request received for username: {}", userCredentials.getUsername());
 
         // Call service to register user and get response
@@ -47,10 +54,13 @@ public class AuthController {
      *
      * @param userCredentials The user's login details.
      * @return ResponseEntity with a success message and JWT token.
-     * @throws org.springframework.security.authentication.BadCredentialsException if authentication fails.
      */
+    @Operation(summary = "Login user", description = "Authenticates the user and returns a JWT token")
     @PostMapping(AuthURIConstants.LOGIN_ENDPOINT)
-    public ResponseEntity<GenericResponse<?>> login(@RequestBody UserCredentials userCredentials) {
+    public ResponseEntity<GenericResponse<?>> login(
+            @Parameter(description = "User credentials for login", required = true)
+            @RequestBody UserCredentials userCredentials) {
+
         LOGGER.info("User login request received for username: {}", userCredentials.getUsername());
 
         // Call service to log in and get response
@@ -66,8 +76,11 @@ public class AuthController {
      * @param tokenRequest The refresh token request.
      * @return ResponseEntity with new access and refresh tokens.
      */
+    @Operation(summary = "Refresh access token", description = "Generates a new access token using a refresh token")
     @PostMapping(AuthURIConstants.REFRESH_TOKEN)
-    public ResponseEntity<GenericResponse<?>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest) {
+    public ResponseEntity<GenericResponse<?>> refreshToken(
+            @Parameter(description = "Refresh token request payload", required = true)
+            @RequestBody RefreshTokenRequest tokenRequest) {
 
         // Call service to refresh token and get response
         GenericResponse<?> response = authService.refreshToken(tokenRequest);

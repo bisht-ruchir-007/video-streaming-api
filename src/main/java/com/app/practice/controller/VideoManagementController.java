@@ -8,6 +8,8 @@ import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.model.response.VideoResponse;
 import com.app.practice.service.VideoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class VideoManagementController {
      * @throws VideoAlreadyPresentException If the video already exists.
      */
     @PostMapping(VideoURIConstants.PUBLISH_VIDEO_ENDPOINT)
+    @Operation(summary = "Publishes a new video.", description = "Publishes a new video.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<VideoResponse>> publishVideo(@RequestBody VideoRequest videoRequest)
             throws VideoAlreadyPresentException {
         LOGGER.info("Received request to publish video: {}", videoRequest.getTitle());
@@ -56,6 +59,7 @@ public class VideoManagementController {
      * @throws VideoNotFoundException If the video with the given ID is not found.
      */
     @PutMapping(VideoURIConstants.EDIT_VIDEO_METADATA_ENDPOINT)
+    @Operation(summary = "Edits existing video.", description = "Edits the metadata of an existing video.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<VideoResponse>> editVideo(@PathVariable Long id, @RequestBody VideoRequest videoRequest)
             throws VideoNotFoundException {
         LOGGER.info("Received request to update video metadata for ID: {}", id);
@@ -72,6 +76,7 @@ public class VideoManagementController {
      * @throws VideoNotFoundException If the video with the given ID is not found.
      */
     @DeleteMapping(VideoURIConstants.DELIST_VIDEO_ENDPOINT)
+    @Operation(summary = "Delist (soft delete) a video", description = "Delist (soft delete) a video and its associated metadata", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<String>> delistVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.warn("Received request to delist video with ID: {}", id);
         GenericResponse<String> deListVideo = videoService.delistVideo(id);
@@ -87,6 +92,7 @@ public class VideoManagementController {
      * @return ResponseEntity containing a list of videos.
      */
     @GetMapping(VideoURIConstants.LIST_VIDEOS_ENDPOINT)
+    @Operation(summary = "List all videos", description = "Lists all videos with pagination.", security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<GenericResponse<List<VideoDTO>>> listAllVideos(@RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size) {
         LOGGER.info("Received request to list all videos");
