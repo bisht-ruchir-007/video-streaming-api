@@ -104,8 +104,7 @@ logging.file.name=your_file_name
 jwtSecretKey=desiredSecretKey
 jwtExpirationTimeInSec=desiredTimeInSec
 
-# Kafka Configuration (Optional)
-engagement.kafka.enabled=true
+
 ```
 
 ## Server Deployment

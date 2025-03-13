@@ -7,6 +7,7 @@ import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.EngagementService;
+import com.app.practice.service.EngagementStrategyService;
 import com.app.practice.service.VideoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,9 @@ public class VideoEngagementController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoEngagementController.class);
     private final VideoService videoService;
-    private final EngagementService engagementService;
+    private final EngagementStrategyService engagementService;
 
-    public VideoEngagementController(VideoService videoService, EngagementService engagementService) {
+    public VideoEngagementController(VideoService videoService, EngagementStrategyService engagementService) {
         this.videoService = videoService;
         this.engagementService = engagementService;
     }

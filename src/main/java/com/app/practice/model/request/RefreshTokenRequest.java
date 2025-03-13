@@ -16,5 +16,6 @@ public class RefreshTokenRequest {
         this.refreshToken = refreshToken;
     }
 
-
+    public RefreshTokenRequest() {
+    }
 }
