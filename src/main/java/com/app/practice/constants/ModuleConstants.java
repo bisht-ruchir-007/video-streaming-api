@@ -55,5 +55,14 @@ public class ModuleConstants {
     public static final String LISTING_ALL_VIDEOS = "Listing all videos (Page: {}, Size: {})"; // Log message for listing all videos with pagination
     public static final String SEARCHING_VIDEOS = "Searching videos directed by: {} (Page: {}, Size: {})"; // Log message when searching for videos by director with pagination
 
+    // Auth Constants
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String AUTH_BEARER_PREFIX = "Bearer ";
+
+    // Hashing Constants
+    public static final String HASH_ALGO_NAME = "HmacSHA512";
+    public static final String MESSAGE_DIGEST_ALGO_NAME = "SHA-512";
+
+
     // Add more constants here as needed
 }
