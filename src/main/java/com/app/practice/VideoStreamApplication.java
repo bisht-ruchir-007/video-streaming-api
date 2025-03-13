@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Author : Ruchir Bisht
  * */
 @SpringBootApplication
-public class PracticeApplication {
+public class VideoStreamApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PracticeApplication.class, args);
+        SpringApplication.run(VideoStreamApplication.class, args);
     }
 
 }
