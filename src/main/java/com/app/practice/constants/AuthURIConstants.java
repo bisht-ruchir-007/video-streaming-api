@@ -1,6 +1,7 @@
 package com.app.practice.constants;
 
 /**
+ * Code Author : Ruchir Bisht
  * AuthURIConstants defines API endpoint paths for authentication-related operations.
  */
 public class AuthURIConstants {

@@ -18,9 +18,12 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
+ * Code Author : Ruchir Bisht
+ * <p>
  * SecurityConfig class is responsible for configuring Spring Security for the application.
  * It includes JWT authentication, session management, and password encoding.
  */
+
 @Configuration
 public class SecurityConfig {
 

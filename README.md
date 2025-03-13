@@ -1,6 +1,7 @@
 # Video Engagement Statistics System
 
 ## Table of Contents
+
 - [Description](#description)
 - [Features](#features)
 - [Requirements](#requirements)
@@ -23,31 +24,43 @@
 ---
 
 ## Description
-This repository contains the **Video Engagement Statistics System** built using **Spring Boot**. The system tracks and manages video engagement data such as impressions, views, and interactions for a video streaming platform. It includes several services for handling video content, retrieving engagement statistics, and managing video metadata.
+
+This repository contains the **Video Engagement Statistics System** built using **Spring Boot**. The system tracks and
+manages video engagement data such as impressions, views, and interactions for a video streaming platform. It includes
+several services for handling video content, retrieving engagement statistics, and managing video metadata.
 
 ---
 
 ### Security Architecture
 
 #### JWT Authentication
-The system uses **JWT (JSON Web Tokens)** for securing endpoints. Sensitive operations, such as fetching video content and engagement statistics, are only accessible by authenticated users. JWT tokens are stateless and do not require storing session data on the server, enabling scalability.
+
+The system uses **JWT (JSON Web Tokens)** for securing endpoints. Sensitive operations, such as fetching video content
+and engagement statistics, are only accessible by authenticated users. JWT tokens are stateless and do not require
+storing session data on the server, enabling scalability.
 
 #### Token Generation and Refresh
-- **Token Generation**: `POST /v1/admin/get-token` (with basic authentication credentials: `username: admin`, `password: admin`).
+
+- **Token Generation**: `POST /v1/admin/get-token` (with basic authentication credentials: `username: admin`,
+  `password: admin`).
 - **Token Refresh**: `POST /v1/admin/token-refresh` (providing a refresh token: `refreshToken: refreshToken`).
 
 #### Credentials
+
 Users must first **register** themselves before consuming APIs.
 
 #### Secure Endpoints
+
 All endpoints are secured and require a valid JWT token for access.
 
 #### JWT Token Expiration
+
 JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hours**.
 
 ---
 
 ## Features
+
 - **Video Content Retrieval**: Fetch video metadata and engagement statistics for a given video ID.
 - **Search Video Metadata**: Search for video metadata (director, genre, cast) with pagination.
 - **Track Engagement**: Track video engagement (impressions, views).
@@ -59,6 +72,7 @@ JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hou
 ---
 
 ## Requirements
+
 - **Java**: 21
 - **MySQL**: 8.0.33
 - **Maven**: 3.2.12 or higher
@@ -70,6 +84,7 @@ JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hou
 ## Configuration
 
 ### Setup Database
+
 Create the MySQL database:
 
 ```sql
@@ -83,21 +98,19 @@ mysql -u{username} -p{password} {database_name} < {path_to_dump}/dbDump.sql;
 ```
 
 ### Application Properties
+
 Add the following configuration to `src/main/resources/application.properties`:
 
 ```properties
 # Active Profile
 spring.profiles.active=dev // For Production: prod
-
 # Database Config
 spring.datasource.url=jdbc:mysql://localhost:3306/database_name
 spring.datasource.username=your_username
 spring.datasource.password=your_password
-
 # Log Config
 logging.file.path=your_log_path
 logging.file.name=your_file_name
-
 # JWT Config
 jwtSecretKey=desiredSecretKey
 jwtExpirationTimeInSec=desiredTimeInSec
@@ -106,13 +119,20 @@ jwtExpirationTimeInSec=desiredTimeInSec
 ---
 
 ## Assumptions
-1. **Development Environment**: Direct database communication is used. In production, **Kafka Message Brokers** will handle inter-service communication.
+
+1. **Development Environment**: Direct database communication is used. In production, **Kafka Message Brokers** will
+   handle inter-service communication.
 2. **Caching**: No caching is implemented in development. In production, **Redis Distributed Caching** will be applied.
-3. **Logging**: Logs are shown on the console in development. In production, they will be sent to **Elasticsearch** via **Kafka-Logstash** integration.
+3. **Logging**: Logs are shown on the console in development. In production, they will be sent to **Elasticsearch** via
+   **Kafka-Logstash** integration.
+4. **Rate Limiter**: Rate limiting and fault tolerance mechanisms are not implemented in the development environment.
+5. **Load/Play**: It is assumed that video loading and playing are independent, and engagement stats will be recorded
+   accordingly.
 
 ---
 
 ## Server Deployment
+
 - **Java 21**, **MySQL**, and **Tomcat** are required.
 - The deployment package can be a **WAR** or **JAR** file.
 - Upload the **SQL dump** to the server database.
@@ -122,6 +142,7 @@ jwtExpirationTimeInSec=desiredTimeInSec
 ## Installation
 
 ### Clone the Repository
+
 Clone the repository:
 
 ```bash
@@ -130,6 +151,7 @@ cd video-stream-app
 ```
 
 ### Build the Project
+
 Build the project with Maven:
 
 ```bash
@@ -141,6 +163,7 @@ mvn clean install
 ## Usage
 
 ### Run the Application
+
 To start the application:
 
 ```bash
@@ -148,6 +171,7 @@ mvn spring-boot:run
 ```
 
 ### Access the APIs
+
 Once the application is running, you can interact with the various API endpoints detailed below.
 
 ---
@@ -155,6 +179,7 @@ Once the application is running, you can interact with the various API endpoints
 ## Authentication API Documentation
 
 ### 1. User Registration
+
 - **URL**: `/api/v1/auth/register`
 - **Method**: `POST`
 - **Request Body**:
@@ -173,6 +198,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 2. User Login
+
 - **URL**: `/api/v1/auth/login`
 - **Method**: `POST`
 - **Request Body**:
@@ -191,6 +217,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 3. Refresh Token
+
 - **URL**: `/api/v1/auth/refresh-token`
 - **Method**: `POST`
 - **Request Body**:
@@ -212,6 +239,7 @@ Once the application is running, you can interact with the various API endpoints
 ## Video Engagement API Documentation
 
 ### 1. Play Video
+
 - **URL**: `/api/v1/videos/{id}/play`
 - **Method**: `GET`
 - **Path Variable**: `id` (Video ID)
@@ -224,6 +252,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 2. Search Videos by Director
+
 - **URL**: `/api/v1/videos/director`
 - **Method**: `GET`
 - **Request Parameters**: `director`, `page`, `size`
@@ -236,6 +265,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 3. Get Engagement Stats for Video
+
 - **URL**: `/api/v1/stats/{id}/engagement`
 - **Method**: `GET`
 - **Path Variable**: `id` (Video ID)
@@ -252,6 +282,7 @@ Once the application is running, you can interact with the various API endpoints
 ## Video Management API Documentation
 
 ### 1. Publish Video
+
 - **URL**: `/api/v1/videos/publish`
 - **Method**: `POST`
 - **Request Body**:
@@ -272,6 +303,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 2. Edit Video Metadata
+
 - **URL**: `/api/v1/videos/edit/{id}`
 - **Method**: `PUT`
 - **Request Body**:
@@ -285,6 +317,7 @@ Once the application is running, you can interact with the various API endpoints
     ```
 
 ### 3. Delist Video
+
 - **URL**: `/api/v1/videos/delist/{id}`
 - **Method**: `DELETE`
 - **Response**:

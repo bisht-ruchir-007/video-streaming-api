@@ -28,6 +28,14 @@ public class VideoEngagementController {
         this.engagementService = engagementService;
     }
 
+    @GetMapping(VideoURIConstants.LOAD_VIDEO_ENDPOINT)
+    public ResponseEntity<GenericResponse<String>> loadVideoContent(@PathVariable Long id) throws VideoNotFoundException {
+        LOGGER.info("Received request to load video content with ID: {}", id);
+        GenericResponse<String> videoContent = videoService.playVideo(id);
+        LOGGER.info("Loading video with ID: {}", id);
+        return ResponseEntity.ok(videoContent);
+    }
+
     @GetMapping(VideoURIConstants.PLAY_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<String>> playVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to play video with ID: {}", id);
