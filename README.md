@@ -39,15 +39,9 @@ The system uses **JWT (JSON Web Tokens)** for securing endpoints. Sensitive oper
 and engagement statistics, are only accessible by authenticated users. JWT tokens are stateless and do not require
 storing session data on the server, enabling scalability.
 
-#### Token Generation and Refresh
-
-- **Token Generation**: `POST /v1/admin/get-token` (with basic authentication credentials: `username: admin`,
-  `password: admin`).
-- **Token Refresh**: `POST /v1/admin/token-refresh` (providing a refresh token: `refreshToken: refreshToken`).
-
 #### Credentials
 
-Users must first **register** themselves before consuming APIs.
+Users must first **register** or **log-in** themselves before consuming APIs.
 
 #### Secure Endpoints
 
