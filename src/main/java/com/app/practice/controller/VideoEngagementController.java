@@ -6,7 +6,6 @@ import com.app.practice.dto.VideoDTO;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.GenericResponse;
-import com.app.practice.service.EngagementService;
 import com.app.practice.service.EngagementStrategyService;
 import com.app.practice.service.VideoService;
 import org.slf4j.Logger;
