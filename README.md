@@ -25,9 +25,7 @@
 
 ## Description
 
-This repository contains the **Video Engagement Statistics System** built using **Spring Boot**. The system tracks and
-manages video engagement data such as impressions, views, and interactions for a video streaming platform. It includes
-several services for handling video content, retrieving engagement statistics, and managing video metadata.
+This Module contains the **Video Engagement & Management System**, a robust Spring Boot application designed to **handle video content**, **metadata management**, and **user engagement analytics** for a video streaming platform. The system facilitates seamless video publishing, playback, search functionality, and engagement tracking, including impressions, views, and user interactions. It follows a scalable microservices architecture with secure authentication, efficient data handling, and optimized API endpoints to ensure high performance and reliability.
 
 ---
 
@@ -54,14 +52,32 @@ JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hou
 ---
 
 ## Features
+## **Features**
 
-- **Video Content Retrieval**: Fetch video metadata and engagement statistics for a given video ID.
-- **Search Video Metadata**: Search for video metadata (director, genre, cast) with pagination.
-- **Track Engagement**: Track video engagement (impressions, views).
-- **Soft Delete Video**: Soft delete videos while keeping them in the database.
-- **Publish Video**: Add videos to the platform.
-- **Video Metadata Management**: Add, edit, and update video metadata.
-- **Error Handling**: Robust error management for issues like invalid video IDs.
+### **1. Video Management (VideoManagementController)**
+- **Publish Video** (`POST /publish`) → Uploads a new video.
+- **Edit Video Metadata** (`PUT /edit/{id}`) → Updates metadata of an existing video.
+- **Delist Video** (`DELETE /delist/{id}`) → Removes a video from public view.
+- **List Videos** (`GET /list`) → Fetches a paginated list of all videos.
+
+### **2. Video Engagement (VideoEngagementController)**
+- **Load Video Content** (`GET /load/{id}`) → Loads video content by ID.
+- **Play Video** (`GET /play/{id}`) → Plays a specific video.
+- **Search by Director** (`GET /search/director`) → Searches videos by director.
+- **Search Videos** (`GET /search`) → Searches videos based on a search phrase.
+- **Get Engagement Stats** (`GET /stats/engagement/{id}`) → Fetches engagement analytics for a video.
+
+### **3. Authentication (AuthController)**
+- **Register User** (`POST /register`) → Registers a new user.
+- **Login User** (`POST /login`) → Logs in a user and returns a JWT token.
+- **Refresh Token** (`POST /refresh-token`) → Provides a new access token using a refresh token.
+
+### **4. Additional Features**
+✅ **Spring Security** with JWT authentication.  
+✅ **Custom Exception Handling** (e.g., `VideoNotFoundException`, `VideoAlreadyPresentException`).  
+✅ **Logging with SLF4J** for API request tracking.  
+✅ **Pagination Support** for video listings & searches.  
+✅ **Service Layer (Service & ServiceImpl)** for clean architecture.
 
 ---
 
