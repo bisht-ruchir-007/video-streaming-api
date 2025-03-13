@@ -23,6 +23,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping(VideoURIConstants.VIDEO_BASE_PATH)
+//@Tag(name = "Video Controller", description = "Video endpoints")
 public class VideoController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoController.class);
@@ -43,6 +44,7 @@ public class VideoController {
      * @throws VideoAlreadyPresentException If the video already exists.
      */
     @PostMapping(VideoURIConstants.PUBLISH_VIDEO_ENDPOINT)
+    // @Operation(summary = "API: To Publishes a new video.", description = "", security = {@SecurityRequirement(name = "bearerAuth")})
     public ResponseEntity<VideoResponse> publishVideo(@RequestBody VideoRequest videoRequest)
             throws VideoAlreadyPresentException {
         LOGGER.info("Received request to publish video: {}", videoRequest.getTitle());
@@ -170,23 +172,8 @@ public class VideoController {
         return results.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(results);
     }
 
-    /**
-     * Fetches engagement statistics for a video.
-     *
-     * @param id The video ID.
-     * @return ResponseEntity containing engagement statistics.
-     * @throws VideoNotFoundException If the video is not found.
-     */
-    @GetMapping(VideoURIConstants.VIDEO_ENGAGEMENT_ENDPOINT)
-    public ResponseEntity<EngagementResponse> getEngagementStats(@PathVariable Long id)
-            throws VideoNotFoundException {
-        LOGGER.info("Received request for engagement stats of video ID: {}", id);
 
-        EngagementResponse engagementResponse = engagementService.getEngagementStats(id);
 
-        LOGGER.info("Returning engagement stats for video ID: {}", id);
-        return ResponseEntity.ok(engagementResponse);
-    }
 }
 
 

@@ -63,11 +63,11 @@ The system uses a soft delete approach for video content, allowing videos to rem
 - **Error Handling**: Robust error management for common issues like invalid video IDs or unexpected errors.
 
 ## Requirements
-- **Java**: 17
+- **Java**: 21
 - **MySQL**: 8.0.33
 - **Maven**: 3.2.12 or higher
 - **JUnit 5 & Mockito** for unit testing and mocking
-- **Kafka** (Optional)
+- **Kafka** (Production)
 
 ## Configuration
 

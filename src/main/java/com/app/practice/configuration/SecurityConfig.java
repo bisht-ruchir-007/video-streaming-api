@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * SecurityConfig class is responsible for configuring Spring Security for the application.
@@ -25,6 +27,8 @@ public class SecurityConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    RequestMatcher[] permittedMatchers = PermittedEndpointsConfig.getPermittedMatchers();
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -47,11 +51,12 @@ public class SecurityConfig {
                     LOGGER.info("Disabling CSRF protection as JWT is used.");
                     csrf.disable();
                 })
+                .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
                 .authorizeHttpRequests(auth -> {
                     LOGGER.info("Configuring authentication rules...");
-                    auth
-                            .requestMatchers(AuthURIConstants.AUTH_BASE_PATH + AuthURIConstants.LOGIN_ENDPOINT,
-                                    AuthURIConstants.AUTH_BASE_PATH + AuthURIConstants.REGISTER_ENDPOINT).permitAll();
+
+                    auth.requestMatchers(permittedMatchers).permitAll();
+
                     LOGGER.info("Public endpoints: {}, {}", AuthURIConstants.LOGIN_ENDPOINT, AuthURIConstants.REGISTER_ENDPOINT);
 
                     auth.anyRequest().authenticated();
