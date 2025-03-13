@@ -17,6 +17,7 @@ import com.app.practice.service.VideoService;
 import com.app.practice.utils.VideoMetaDataSpecification;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  * Author: Ruchir Bisht
  */
 @Service
+@RequiredArgsConstructor
 public class VideoServiceImpl implements VideoService {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoServiceImpl.class);
@@ -44,12 +46,6 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
     private final VideoMetaDataRepository videoMetaDataRepository;
     private final EngagementStatisticsRepository engagementStatsRepo;
-
-    public VideoServiceImpl(VideoRepository videoRepository, VideoMetaDataRepository videoMetaDataRepository, EngagementStatisticsRepository engagementStatsRepo) {
-        this.videoRepository = videoRepository;
-        this.videoMetaDataRepository = videoMetaDataRepository;
-        this.engagementStatsRepo = engagementStatsRepo;
-    }
 
     /**
      * Publishes a new video after validating that it does not already exist.

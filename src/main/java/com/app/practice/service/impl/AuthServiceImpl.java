@@ -8,6 +8,7 @@ import com.app.practice.model.response.GenericResponse;
 import com.app.practice.repository.UserRepository;
 import com.app.practice.security.JwtUtil;
 import com.app.practice.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ import java.util.Optional;
  * Author: Ruchir Bisht
  */
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     // Logger instance for logging events related to authentication.
@@ -37,21 +39,6 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;  // Authentication manager for authenticating login requests
     private final PasswordEncoder passwordEncoder;  // Password encoder to securely store user passwords
 
-    /**
-     * Constructor for dependency injection.
-     *
-     * @param jwtUtil               JwtUtil instance for token management
-     * @param userRepository        UserRepository for database operations
-     * @param authenticationManager AuthenticationManager for user authentication
-     * @param passwordEncoder       PasswordEncoder for securely encoding passwords
-     */
-    public AuthServiceImpl(JwtUtil jwtUtil, UserRepository userRepository, AuthenticationManager authenticationManager,
-                           PasswordEncoder passwordEncoder) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-        this.authenticationManager = authenticationManager;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /**
      * Registers a new user in the system.

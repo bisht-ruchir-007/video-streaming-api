@@ -8,6 +8,7 @@ import com.app.practice.model.request.VideoRequest;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.model.response.VideoResponse;
 import com.app.practice.service.VideoService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(VideoURIConstants.VIDEO_BASE_PATH)
+@RequiredArgsConstructor
 public class VideoManagementController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoManagementController.class);
+
     private final VideoService videoService;
 
-    public VideoManagementController(VideoService videoService) {
-        this.videoService = videoService;
-    }
 
     /**
      * Publishes a new video.

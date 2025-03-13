@@ -8,6 +8,7 @@ import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.EngagementStrategyService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,20 +21,12 @@ import org.springframework.stereotype.Service;
  * Author: Ruchir Bisht
  */
 @Service
+@RequiredArgsConstructor
 public class DBEngagementStrategyServiceImpl implements EngagementStrategyService {
 
     private static final Logger logger = LoggerFactory.getLogger(DBEngagementStrategyServiceImpl.class);
 
     private final VideoRepository videoRepository;
-
-    /**
-     * Constructor to inject VideoRepository dependency.
-     *
-     * @param videoRepository the repository used to fetch video data
-     */
-    public DBEngagementStrategyServiceImpl(VideoRepository videoRepository) {
-        this.videoRepository = videoRepository;
-    }
 
     /**
      * Fetches the engagement statistics for a given video ID.

@@ -1,6 +1,7 @@
 package com.app.practice.service.impl;
 
 import com.app.practice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,18 +15,10 @@ import org.springframework.stereotype.Service;
  * Author : Ruchir Bisht
  */
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    /**
-     * Constructor for injecting the UserRepository dependency.
-     *
-     * @param userRepository the repository to fetch user data from the database
-     */
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * Loads user details by username for authentication.
