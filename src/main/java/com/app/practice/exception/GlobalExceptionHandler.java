@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+        return buildResponseEntity(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     /**
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Object> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     /**
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(VideoAlreadyPresentException.class)
     public ResponseEntity<Object> handleVideoAlreadyPresent(VideoAlreadyPresentException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     /**
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(VideoNotFoundException.class)
     public ResponseEntity<Object> handleVideoNotFoundException(VideoNotFoundException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, "An error occurred: " + ex.getMessage());
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     /**
@@ -107,6 +107,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex) {
-        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred: " + ex.getMessage());
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 }

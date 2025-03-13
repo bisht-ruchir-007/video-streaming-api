@@ -38,23 +38,20 @@ public class DBVideoStreamService implements VideoStreamService {
      * @throws VideoNotFoundException if the video is not found or delisted
      */
     private Video fetchVideoById(Long id) throws VideoNotFoundException {
-        return videoRepository.findById(id)
-                .filter(video -> {
-                    if (video.isDelisted()) {
-                        logger.warn(ModuleConstants.VIDEO_DELISTED + "{}", video.getTitle());
-                        try {
-                            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
-                        } catch (VideoNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    return true;
-                })
+        Video video = videoRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error(ModuleConstants.VIDEO_NOT_FOUND + "{}", id);
+                    logger.error("{} {}", ModuleConstants.VIDEO_NOT_FOUND, id);
                     return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
+
+        if (video.isDelisted()) {
+            logger.warn("{} {}", ModuleConstants.VIDEO_DELISTED, video.getTitle());
+            throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
+        }
+
+        return video;
     }
+
 
     /**
      * Updates engagement statistics for a video.
