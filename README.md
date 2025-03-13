@@ -5,69 +5,67 @@
 - [Features](#features)
 - [Requirements](#requirements)
 - [Configuration](#configuration)
+    - [Database Setup](#setup-database)
+    - [Application Properties](#application-properties)
+- [Assumptions](#assumptions)
 - [Server Deployment](#server-deployment)
 - [Installation](#installation)
+    - [Clone the Repository](#clone-the-repository)
+    - [Build the Project](#build-the-project)
 - [Usage](#usage)
+    - [Run the Application](#run-the-application)
+    - [Access the APIs](#access-the-apis)
+- [Authentication API Documentation](#authentication-api-documentation)
+- [Video Engagement API Documentation](#video-engagement-api-documentation)
+- [Video Management API Documentation](#video-management-api-documentation)
 - [Contact Information](#contact-information)
 
+---
+
 ## Description
-This repository contains a **Video Engagement Statistics System** built using **Spring Boot**. The system tracks and manages video engagement data such as impressions, views, and interactions for a video streaming platform. It includes several services for handling video content, retrieving engagement statistics, and managing video metadata.
+This repository contains the **Video Engagement Statistics System** built using **Spring Boot**. The system tracks and manages video engagement data such as impressions, views, and interactions for a video streaming platform. It includes several services for handling video content, retrieving engagement statistics, and managing video metadata.
 
-### Detailed Documentation and Assumptions
+---
 
-#### Security Architecture
+### Security Architecture
 
-**JWT Authentication**  
-To secure endpoints, **JWT (JSON Web Tokens)** is used for authentication. Sensitive operations like fetching video content and engagement statistics are only accessible by authenticated users.  
-JWT tokens are stateless and do not require storing session data on the server side, making the system scalable.
+#### JWT Authentication
+The system uses **JWT (JSON Web Tokens)** for securing endpoints. Sensitive operations, such as fetching video content and engagement statistics, are only accessible by authenticated users. JWT tokens are stateless and do not require storing session data on the server, enabling scalability.
 
-**Token Generation and Refresh**  
-Two key API endpoints are available for token handling:
-- `POST /v1/admin/get-token`: This endpoint generates a JWT token using basic authentication credentials (`username: admin`, `password: admin`).
-- `POST /v1/admin/token-refresh`: This endpoint generates a new JWT token using a refresh token provided during the token generation process (`refreshToken: refreshToken`).
+#### Token Generation and Refresh
+- **Token Generation**: `POST /v1/admin/get-token` (with basic authentication credentials: `username: admin`, `password: admin`).
+- **Token Refresh**: `POST /v1/admin/token-refresh` (providing a refresh token: `refreshToken: refreshToken`).
 
-**Credentials**  
-User have to first Register Its self , then he can consume the APIs .
+#### Credentials
+Users must first **register** themselves before consuming APIs.
 
-**Secure Endpoints**  
-All other endpoints in the application are secured and require a valid JWT token to access.
+#### Secure Endpoints
+All endpoints are secured and require a valid JWT token for access.
 
-**JWT Token Expiration**  
-JWT tokens have an expiration time of 1 hour, and the refresh token validity is double the token expiration time.
+#### JWT Token Expiration
+JWT tokens expire in **1 hour**, and the refresh token remains valid for **2 hours**.
 
-#### Design Decisions
+---
 
-**Architecture**
-- **Spring Boot Framework**: Chosen for its ease of use, scalability, and built-in support for REST APIs.
-- **JPA/Hibernate**: Used for database interactions, simplifying data persistence.
-- **MySQL Database**: Chosen for its high performance and relational data storage for video metadata and engagement statistics.
-- **Error Handling**: Centralized error handling through a custom exception (`InternalServerErrorException`).
-
-**Engagement Statistics Tracking**
-- **Kafka Integration (Optional)**: Supports Kafka for tracking engagement events asynchronously, improving scalability.
-- **Event-driven Design**: Engagement events are asynchronously processed, enabling real-time tracking.
-
-**Pagination and Search Functionality**  
-Search operations support multiple fields (title, director, genre) and pagination for efficiency.
-
-**Soft Delete**  
-The system uses a soft delete approach for video content, allowing videos to remain in the database after deletion but preventing them from being included in search results or engagement tracking.
-
-#### Features
+## Features
 - **Video Content Retrieval**: Fetch video metadata and engagement statistics for a given video ID.
-- **Search Video Metadata**: Allows searching video metadata (title, director, genre, etc.) with pagination.
-- **Track Engagement Statistics**: Track video engagement such as impressions and views.
-- **Soft Delete Video**: Mark videos as deleted without removing them from the database.
+- **Search Video Metadata**: Search for video metadata (title, director, genre) with pagination.
+- **Track Engagement**: Track video engagement (impressions, views).
+- **Soft Delete Video**: Soft delete videos while keeping them in the database.
 - **Publish Video**: Add videos to the platform.
-- **Video Metadata Management**: Add, edit, and update metadata such as title, director, etc.
-- **Error Handling**: Robust error management for common issues like invalid video IDs or unexpected errors.
+- **Video Metadata Management**: Add, edit, and update video metadata.
+- **Error Handling**: Robust error management for issues like invalid video IDs.
+
+---
 
 ## Requirements
 - **Java**: 21
 - **MySQL**: 8.0.33
 - **Maven**: 3.2.12 or higher
-- **JUnit 5 & Mockito** for unit testing and mocking
-- **Kafka** (Production)
+- **JUnit 5 & Mockito**: For unit testing
+- **Kafka**: (Production environment)
+
+---
 
 ## Configuration
 
@@ -85,11 +83,11 @@ mysql -u{username} -p{password} {database_name} < {path_to_dump}/dbDump.sql;
 ```
 
 ### Application Properties
-Add common configurations in `src/main/resources/application.properties`:
+Add the following configuration to `src/main/resources/application.properties`:
 
 ```properties
 # Active Profile
-spring.profiles.active=dev // Prod
+spring.profiles.active=dev // For Production: prod
 
 # Database Config
 spring.datasource.url=jdbc:mysql://localhost:3306/database_name
@@ -103,215 +101,160 @@ logging.file.name=your_file_name
 # JWT Config
 jwtSecretKey=desiredSecretKey
 jwtExpirationTimeInSec=desiredTimeInSec
-
 ```
 
+---
+
+## Assumptions
+1. **Development Environment**: Direct database communication is used. In production, **Kafka Message Brokers** will handle inter-service communication.
+2. **Caching**: No caching is implemented in development. In production, **Redis Distributed Caching** will be applied.
+3. **Logging**: Logs are shown on the console in development. In production, they will be sent to **Elasticsearch** via **Kafka-Logstash** integration.
+
+---
+
 ## Server Deployment
-The server requires **Java 21**, **MySQL**, and **Tomcat**.  
-The deployment package can be either a **WAR** or **JAR** file, depending on your needs.  
-The SQL dump should be uploaded to the server database.
+- **Java 21**, **MySQL**, and **Tomcat** are required.
+- The deployment package can be a **WAR** or **JAR** file.
+- Upload the **SQL dump** to the server database.
+
+---
 
 ## Installation
 
 ### Clone the Repository
-Clone the repository to your local system:
+Clone the repository:
 
 ```bash
-cd existing_repo
-git remote add origin https://github.com/bisht-ruchir-007/video-stream-app
-git branch -M main
-git push -uf origin main
+git clone https://github.com/bisht-ruchir-007/video-stream-app
+cd video-stream-app
 ```
 
 ### Build the Project
-Build the project using Maven:
+Build the project with Maven:
 
 ```bash
 mvn clean install
 ```
 
+---
+
 ## Usage
 
 ### Run the Application
-Start the application using:
+To start the application:
 
 ```bash
 mvn spring-boot:run
 ```
 
 ### Access the APIs
-# Authentication API Documentation
+Once the application is running, you can interact with the various API endpoints detailed below.
 
-## 1. User Registration
-- **URL:** `/api/v1/auth/register`
-- **Method:** `POST`
-- **Request Body:**
+---
+
+## Authentication API Documentation
+
+### 1. User Registration
+- **URL**: `/api/v1/auth/register`
+- **Method**: `POST`
+- **Request Body**:
     ```json
     {
       "username": "user123",
       "password": "password123"
     }
     ```
-- **Response:**
-    - **Status:** 201 Created
-    - **Body:**
-        ```json
-        {
-          "message": "User registered successfully",
-          "data": { "token": "JWT_TOKEN_HERE" }
-        }
-        ```
+- **Response**:
+    ```json
+    {
+      "message": "User registered successfully",
+      "data": { "token": "JWT_TOKEN_HERE" }
+    }
+    ```
 
-## 2. User Login
-- **URL:** `/api/v1/auth/login`
-- **Method:** `POST`
-- **Request Body:**
+### 2. User Login
+- **URL**: `/api/v1/auth/login`
+- **Method**: `POST`
+- **Request Body**:
     ```json
     {
       "username": "user123",
       "password": "password123"
     }
     ```
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Login successful",
-          "data": { "token": "JWT_TOKEN_HERE" }
-        }
-        ```
+- **Response**:
+    ```json
+    {
+      "message": "Login successful",
+      "data": { "token": "JWT_TOKEN_HERE" }
+    }
+    ```
 
-## 3. Refresh Token
-- **URL:** `/api/v1/auth/refresh-token`
-- **Method:** `POST`
-- **Request Body:**
+### 3. Refresh Token
+- **URL**: `/api/v1/auth/refresh-token`
+- **Method**: `POST`
+- **Request Body**:
     ```json
     {
       "refreshToken": "REFRESH_TOKEN_HERE"
     }
     ```
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Token refreshed successfully",
-          "data": { "accessToken": "NEW_ACCESS_TOKEN_HERE", "refreshToken": "NEW_REFRESH_TOKEN_HERE" }
-        }
-        ```
+- **Response**:
+    ```json
+    {
+      "message": "Token refreshed successfully",
+      "data": { "accessToken": "NEW_ACCESS_TOKEN_HERE", "refreshToken": "NEW_REFRESH_TOKEN_HERE" }
+    }
+    ```
 
-# Video Engagement API Documentation
+---
 
-## 1. Play Video
-- **URL:** `/api/v1/videos/{id}/play`
-- **Method:** `GET`
-- **Path Variable:**
-    - `id`: The ID of the video to be played.
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Video playing successfully",
-          "data": "Sample Video Content"
-        }
-        ```
+## Video Engagement API Documentation
 
-## 2. Search Videos by Director
-- **URL:** `/api/v1/videos/director`
-- **Method:** `GET`
-- **Request Parameters:**
-    - `director`: The director's name.
-    - `page`: (Optional, default: `0`)
-    - `size`: (Optional, default: `10`)
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Videos found",
-          "data": [
-            {
-              "id": 1,
-              "title": "Inception - 1",
-              "director": "Ruchir",
-              "cast": "Leonardo DiCaprio",
-              "genre": "Sci-Fi",
-              "runningTime": 120
-            },
-            {
-              "id": 2,
-              "title": "Inception - 2",
-              "director": "Ruchir",
-              "cast": "Leonardo DiCaprio",
-              "genre": "Sci-Fi",
-              "runningTime": 120
-            }
-          ]
-        }
-        ```
+### 1. Play Video
+- **URL**: `/api/v1/videos/{id}/play`
+- **Method**: `GET`
+- **Path Variable**: `id` (Video ID)
+- **Response**:
+    ```json
+    {
+      "message": "Video playing successfully",
+      "data": "Sample Video Content"
+    }
+    ```
 
-## 3. Search Videos
-- **URL:** `/api/v1/videos/search`
-- **Method:** `GET`
-- **Request Parameters:**
-    - `searchPhrase`: The search query.
-    - `page`: (Optional, default: `0`)
-    - `size`: (Optional, default: `10`)
-- **Response:**
-    - **Status:** 200 OK (if videos found)
-    - **Status:** 204 No Content (if no videos found)
-    - **Body (When Videos Found):**
-        ```json
-        {
-          "message": "Videos found",
-          "data": [
-            {
-              "id": 1,
-              "title": "Inception - 1",
-              "director": "Ruchir",
-              "cast": "Leonardo DiCaprio",
-              "genre": "Sci-Fi",
-              "runningTime": 120
-            },
-            {
-              "id": 2,
-              "title": "Inception - 2",
-              "director": "Ruchir",
-              "cast": "Leonardo DiCaprio",
-              "genre": "Sci-Fi",
-              "runningTime": 120
-            }
-          ]
-        }
-        ```
+### 2. Search Videos by Director
+- **URL**: `/api/v1/videos/director`
+- **Method**: `GET`
+- **Request Parameters**: `director`, `page`, `size`
+- **Response**:
+    ```json
+    {
+      "message": "Videos found",
+      "data": [ /* video details */ ]
+    }
+    ```
 
-## 4. Get Engagement Stats for Video
-- **URL:** `/api/v1/stats/{id}/engagement`
-- **Method:** `GET`
-- **Path Variable:**
-    - `id`: The ID of the video to fetch engagement stats for.
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Engagement stats fetched successfully",
-          "data": {
-            "views": 1000,
-            "impressions": 500
-          }
-        }
-        ```
+### 3. Get Engagement Stats for Video
+- **URL**: `/api/v1/stats/{id}/engagement`
+- **Method**: `GET`
+- **Path Variable**: `id` (Video ID)
+- **Response**:
+    ```json
+    {
+      "message": "Engagement stats fetched successfully",
+      "data": { "views": 1000, "impressions": 500 }
+    }
+    ```
 
+---
 
-# Video Management API Documentation
+## Video Management API Documentation
 
-## 1. Publish Video
-- **URL:** `/api/v1/videos/publish`
-- **Method:** `POST`
-- **Request Body:**
+### 1. Publish Video
+- **URL**: `/api/v1/videos/publish`
+- **Method**: `POST`
+- **Request Body**:
     ```json
     {
       "title": "Video Title",
@@ -320,101 +263,43 @@ mvn spring-boot:run
       "releaseDate": "2025-03-13"
     }
     ```
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Video published successfully",
-          "data": {
-            "id": 1,
-            "title": "Video Title",
-            "description": "Video description",
-            "director": "Director Name",
-            "releaseDate": "2025-03-13"
-          }
-        }
-        ```
-
-## 2. Edit Video Metadata
-- **URL:** `/api/v1/videos/edit/{id}`
-- **Method:** `PUT`
-- **Path Variable:**
-    - `id`: The ID of the video to be updated.
-- **Request Body:**
+- **Response**:
     ```json
     {
-      "title": "Updated Video Title",
-      "description": "Updated description",
+      "message": "Video published successfully",
+      "data": { /* video details */ }
+    }
+    ```
+
+### 2. Edit Video Metadata
+- **URL**: `/api/v1/videos/edit/{id}`
+- **Method**: `PUT`
+- **Request Body**:
+    ```json
+    {
+      "title": "Updated Title",
+      "description": "Updated Description",
       "director": "Updated Director",
       "releaseDate": "2025-03-15"
     }
     ```
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Video metadata updated successfully",
-          "data": {
-            "id": 1,
-            "title": "Updated Video Title",
-            "description": "Updated description",
-            "director": "Updated Director",
-            "releaseDate": "2025-03-15"
-          }
-        }
-        ```
 
-## 3. Delist Video
-- **URL:** `/api/v1/videos/delist/{id}`
-- **Method:** `DELETE`
-- **Path Variable:**
-    - `id`: The ID of the video to be delisted.
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Video has been delisted successfully",
-          "data": "Video with ID: 1 has been removed from the catalog"
-        }
-        ```
-
-## 4. List All Videos
-- **URL:** `/api/v1/videos`
-- **Method:** `GET`
-- **Request Parameters:**
-    - `page`: (Optional, default: `0`)
-    - `size`: (Optional, default: `10`)
-- **Response:**
-    - **Status:** 200 OK
-    - **Body:**
-        ```json
-        {
-          "message": "Videos fetched successfully",
-          "data": [
-            {
-              "id": 1,
-              "title": "Video 1",
-              "director": "Director A"
-            },
-            {
-              "id": 2,
-              "title": "Video 2",
-              "director": "Director B"
-            }
-          ]
-        }
-        ```
-
-
-
-
-## Contact Information
-**Project Maintainer**: Ruchir Bisht
-**Repository**: [Video Engagement Statistics System](https://github.com/bisht-ruchir-007/video-stream-app)
+### 3. Delist Video
+- **URL**: `/api/v1/videos/delist/{id}`
+- **Method**: `DELETE`
+- **Response**:
+    ```json
+    {
+      "message": "Video has been delisted successfully",
+      "data": "Video with ID: 1 has been removed from the catalog"
+    }
+    ```
 
 ---
 
-This README is designed to give a comprehensive overview of the project, including all key sections like security, features, setup, and configuration. Let me know if you need any adjustments!
+## Contact Information
+
+**Project Maintainer**: Ruchir Bisht  
+**Repository**: [Video Engagement Statistics System](https://github.com/bisht-ruchir-007/video-stream-app)
+
+---
