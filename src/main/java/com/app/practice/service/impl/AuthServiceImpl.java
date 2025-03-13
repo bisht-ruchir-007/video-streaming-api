@@ -1,8 +1,11 @@
 package com.app.practice.service.impl;
 
-import com.app.practice.entity.User;
+
+import com.app.practice.constants.ModuleConstants;
 import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
+import com.app.practice.entity.User;
+import com.app.practice.model.response.GenericResponse;
 import com.app.practice.repository.UserRepository;
 import com.app.practice.security.JwtUtil;
 import com.app.practice.service.AuthService;
@@ -13,9 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -24,27 +28,28 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(JwtUtil jwtUtil, UserRepository userRepository, AuthenticationManager authenticationManager,
+                           PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Map<String, String> registerUser(UserCredentials userCredentials) {
-
-        if (userRepository.findByUsername(userCredentials.getUsername()).isPresent()) {
+    public GenericResponse<?> registerUser(UserCredentials userCredentials) {
+        Optional<User> existingUser = userRepository.findByUsername(userCredentials.getUsername());
+        if (existingUser.isPresent()) {
             LOGGER.warn("Registration failed - Username '{}' is already taken.", userCredentials.getUsername());
-            throw new IllegalArgumentException("Username is already taken!");
+            return GenericResponse.error(ModuleConstants.USERNAME_TAKEN, HttpStatus.BAD_REQUEST);
         }
 
         User newUser = new User();
         newUser.setUsername(userCredentials.getUsername());
         newUser.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
-        newUser.setRole("USER"); // Default role
+        newUser.setRole(ModuleConstants.ROLE_USER); // Default role
 
         userRepository.save(newUser);
         LOGGER.info("User '{}' registered successfully.", userCredentials.getUsername());
@@ -52,14 +57,13 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(userCredentials.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken(userCredentials.getUsername());
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User registered successfully");
-        response.put("accessToken", token);
-        response.put("refreshToken", refreshToken);
-        return response;
+        return GenericResponse.success(Map.of(
+                "message", ModuleConstants.USER_REGISTERED_SUCCESS,
+                "accessToken", token,
+                "refreshToken", refreshToken), HttpStatus.CREATED);
     }
 
-    public Map<String, String> loginUser(UserCredentials userCredentials) {
+    public GenericResponse<?> loginUser(UserCredentials userCredentials) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userCredentials.getUsername(), userCredentials.getPassword())
         );
@@ -67,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = userRepository.findByUsername(userCredentials.getUsername())
                 .orElseThrow(() -> {
                     LOGGER.error("Login failed - User '{}' not found.", userCredentials.getUsername());
-                    return new IllegalArgumentException("User not found");
+                    return new IllegalArgumentException(ModuleConstants.USER_NOT_FOUND);
                 });
 
         String token = jwtUtil.generateToken(userDetails.getUsername());
@@ -75,29 +79,25 @@ public class AuthServiceImpl implements AuthService {
 
         LOGGER.info("User '{}' logged in successfully.", userCredentials.getUsername());
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User logged in successfully");
-        response.put("accessToken", token);
-        response.put("refreshToken", refreshToken);
-
-        return response;
+        return GenericResponse.success(Map.of(
+                "message", ModuleConstants.USER_LOGIN_SUCCESS,
+                "accessToken", token,
+                "refreshToken", refreshToken), HttpStatus.OK);
     }
 
-    public Map<String, String> refreshToken(RefreshTokenRequest refreshTokenReq) {
+    public GenericResponse<?> refreshToken(RefreshTokenRequest refreshTokenReq) {
         String refreshToken = refreshTokenReq.getRefreshToken();
         String username = jwtUtil.extractUsername(refreshToken);
 
         if (jwtUtil.isTokenExpired(refreshToken)) {
-            throw new IllegalArgumentException("Refresh token is expired");
+            return GenericResponse.error(ModuleConstants.REFRESH_TOKEN_EXPIRED, HttpStatus.FORBIDDEN);
         }
 
         String newAccessToken = jwtUtil.generateToken(username);
         String newRefreshToken = jwtUtil.generateRefreshToken(username);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("accessToken", newAccessToken);
-        response.put("refreshToken", newRefreshToken);
-
-        return response;
+        return GenericResponse.success(Map.of(
+                "accessToken", newAccessToken,
+                "refreshToken", newRefreshToken), HttpStatus.OK);
     }
 }

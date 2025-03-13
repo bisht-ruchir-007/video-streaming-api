@@ -3,6 +3,7 @@ package com.app.practice.controller;
 import com.app.practice.constants.AuthURIConstants;
 import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
+import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +36,13 @@ public class AuthController {
      * @throws IllegalArgumentException if the username is already taken.
      */
     @PostMapping(AuthURIConstants.REGISTER_ENDPOINT)
-    public ResponseEntity<Map<String, String>> register(@RequestBody UserCredentials userCredentials) {
+    public ResponseEntity<GenericResponse<?>> register(@RequestBody UserCredentials userCredentials) {
         LOGGER.info("User registration request received for username: {}", userCredentials.getUsername());
-        Map<String, String> response = authService.registerUser(userCredentials);
+
+        // Call service to register user and get response
+        GenericResponse<?> response = authService.registerUser(userCredentials);
+
+        // Return response with CREATED status
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -49,18 +54,29 @@ public class AuthController {
      * @throws org.springframework.security.authentication.BadCredentialsException if authentication fails.
      */
     @PostMapping(AuthURIConstants.LOGIN_ENDPOINT)
-    public ResponseEntity<Map<String, String>> login(@RequestBody UserCredentials userCredentials) {
+    public ResponseEntity<GenericResponse<?>> login(@RequestBody UserCredentials userCredentials) {
         LOGGER.info("User login request received for username: {}", userCredentials.getUsername());
 
-        Map<String, String> response = authService.loginUser(userCredentials);
+        // Call service to log in and get response
+        GenericResponse<?> response = authService.loginUser(userCredentials);
 
+        // Return response with OK status
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Handles refresh token request.
+     *
+     * @param tokenRequest The refresh token request.
+     * @return ResponseEntity with new access and refresh tokens.
+     */
     @PostMapping(AuthURIConstants.REFRESH_TOKEN)
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest) {
+    public ResponseEntity<GenericResponse<?>> refreshToken(@RequestBody RefreshTokenRequest tokenRequest) {
 
-        Map<String, String> response = authService.refreshToken(tokenRequest);
+        // Call service to refresh token and get response
+        GenericResponse<?> response = authService.refreshToken(tokenRequest);
+
+        // Return response with OK status
         return ResponseEntity.ok(response);
     }
 }
