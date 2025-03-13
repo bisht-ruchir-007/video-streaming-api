@@ -2,6 +2,14 @@ package com.app.practice.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entity class representing a video in the system.
+ * It contains information such as the video's title, content, delisting status,
+ * and related metadata and engagement statistics.
+ * <p>
+ * Author: Ruchir Bisht
+ * Note: Lombok is not working on the local machine; hence, getter, setter, and constructors are manually created.
+ */
 @Entity
 @Table(name = "videos_content")
 public class Video {

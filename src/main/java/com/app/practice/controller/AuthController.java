@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
+ * Code Author : Ruchir Bisht
  * AuthController handles user authentication and registration.
  */
 @RestController

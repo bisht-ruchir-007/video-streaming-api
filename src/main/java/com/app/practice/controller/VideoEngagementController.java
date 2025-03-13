@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Code Author: Ruchir Bisht
+ * VideoEngagementController handles video-related operations such as playing videos, loading content,
+ * searching videos by director, and fetching engagement statistics.
+ */
 @RestController
 @RequestMapping(VideoURIConstants.VIDEO_BASE_PATH)
 public class VideoEngagementController {
@@ -28,6 +33,9 @@ public class VideoEngagementController {
         this.engagementService = engagementService;
     }
 
+    /**
+     * Loads video content by ID.
+     */
     @GetMapping(VideoURIConstants.LOAD_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<String>> loadVideoContent(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to load video content with ID: {}", id);
@@ -36,6 +44,9 @@ public class VideoEngagementController {
         return ResponseEntity.ok(videoContent);
     }
 
+    /**
+     * Plays video by ID.
+     */
     @GetMapping(VideoURIConstants.PLAY_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<String>> playVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.info("Received request to play video with ID: {}", id);
@@ -44,6 +55,9 @@ public class VideoEngagementController {
         return ResponseEntity.ok(videoContent);
     }
 
+    /**
+     * Searches videos by director.
+     */
     @GetMapping(VideoURIConstants.SEARCH_BY_DIRECTOR)
     public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideosByDirector(@RequestParam String director,
                                                                                   @RequestParam(defaultValue = "0") int page,
@@ -54,6 +68,9 @@ public class VideoEngagementController {
         return ResponseEntity.ok(videos);
     }
 
+    /**
+     * Searches videos based on a search phrase.
+     */
     @GetMapping(VideoURIConstants.SEARCH_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<List<VideoDTO>>> searchVideos(@RequestParam String searchPhrase,
                                                                         @RequestParam(defaultValue = "0") int page,

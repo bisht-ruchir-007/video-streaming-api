@@ -1,6 +1,14 @@
 package com.app.practice.dto;
 
-// LOMBOK IS NOT WORKING IN MY LOCAL MACHINE
+/**
+ * Author: Ruchir Bisht
+ * VideoDTO is a Data Transfer Object (DTO) that represents a video entity.
+ * It contains various properties related to a video such as ID, title, director, cast, genre, and running time.
+ * This class is used to transfer video data between layers of the application.
+ * <p>
+ * Note: Lombok is not working on the local machine; hence, getter, setter, and constructors are manually created.
+ * <p>
+ */
 public class VideoDTO {
     private Long id;
     private String title;
@@ -69,4 +77,3 @@ public class VideoDTO {
         this.runningTime = runningTime;
     }
 }
-

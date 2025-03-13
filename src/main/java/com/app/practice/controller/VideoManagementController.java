@@ -14,8 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Author: Ruchir Bisht
+ * VideoManagementController handles all the CRUD operations related to video management.
+ * It allows publishing, updating, delisting, and listing videos.
+ */
 @RestController
 @RequestMapping(VideoURIConstants.VIDEO_BASE_PATH)
 public class VideoManagementController {
@@ -27,6 +31,13 @@ public class VideoManagementController {
         this.videoService = videoService;
     }
 
+    /**
+     * Publishes a new video.
+     *
+     * @param videoRequest The request body containing video details.
+     * @return ResponseEntity with the published video details.
+     * @throws VideoAlreadyPresentException If the video already exists.
+     */
     @PostMapping(VideoURIConstants.PUBLISH_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<VideoResponse>> publishVideo(@RequestBody VideoRequest videoRequest)
             throws VideoAlreadyPresentException {
@@ -36,6 +47,14 @@ public class VideoManagementController {
         return ResponseEntity.ok(savedVideo);
     }
 
+    /**
+     * Edits the metadata of an existing video.
+     *
+     * @param id           The ID of the video to be updated.
+     * @param videoRequest The request body containing the new video metadata.
+     * @return ResponseEntity with the updated video details.
+     * @throws VideoNotFoundException If the video with the given ID is not found.
+     */
     @PutMapping(VideoURIConstants.EDIT_VIDEO_METADATA_ENDPOINT)
     public ResponseEntity<GenericResponse<VideoResponse>> editVideo(@PathVariable Long id, @RequestBody VideoRequest videoRequest)
             throws VideoNotFoundException {
@@ -45,6 +64,13 @@ public class VideoManagementController {
         return ResponseEntity.ok(updatedVideo);
     }
 
+    /**
+     * Delists an existing video.
+     *
+     * @param id The ID of the video to be delisted.
+     * @return ResponseEntity with a confirmation message.
+     * @throws VideoNotFoundException If the video with the given ID is not found.
+     */
     @DeleteMapping(VideoURIConstants.DELIST_VIDEO_ENDPOINT)
     public ResponseEntity<GenericResponse<String>> delistVideo(@PathVariable Long id) throws VideoNotFoundException {
         LOGGER.warn("Received request to delist video with ID: {}", id);
@@ -53,6 +79,13 @@ public class VideoManagementController {
         return ResponseEntity.ok(deListVideo);
     }
 
+    /**
+     * Lists all videos with pagination.
+     *
+     * @param page The page number (default is 0).
+     * @param size The page size (default is 10).
+     * @return ResponseEntity containing a list of videos.
+     */
     @GetMapping(VideoURIConstants.LIST_VIDEOS_ENDPOINT)
     public ResponseEntity<GenericResponse<List<VideoDTO>>> listAllVideos(@RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size) {

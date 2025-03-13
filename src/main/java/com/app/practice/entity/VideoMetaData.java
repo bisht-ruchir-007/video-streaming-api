@@ -2,6 +2,14 @@ package com.app.practice.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entity class representing the metadata for a video.
+ * This class holds additional details such as synopsis, director, cast, year of release, genre, and running time.
+ * It also establishes a one-to-one relationship with the `Video` entity.
+ * <p>
+ * Author: Ruchir Bisht
+ * Note: Lombok is not working on the local machine; hence, getter, setter, and constructors are manually created.
+ */
 @Entity
 @Table(name = "videos_meta_data")
 public class VideoMetaData {
