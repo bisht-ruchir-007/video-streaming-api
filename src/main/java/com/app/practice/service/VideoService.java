@@ -4,12 +4,10 @@ import com.app.practice.dto.VideoDTO;
 import com.app.practice.exception.VideoAlreadyPresentException;
 import com.app.practice.exception.VideoNotFoundException;
 import com.app.practice.model.request.VideoRequest;
-import com.app.practice.model.response.EngagementResponse;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.model.response.VideoResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service interface for managing video operations including publishing, editing,

@@ -11,8 +11,8 @@
     <groupId>com.app</groupId>
     <artifactId>practice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>practice</name>
-    <description>Demo project for Spring Boot</description>
+    <name>Video Streaming</name>
+    <description>Video-Streaming module </description>
     <url/>
     <licenses>
         <license/>
