@@ -31,6 +31,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the VideoService interface for managing video operations.
+ * Handles video publishing, editing, delisting, loading, playing, and searching, including pagination.
+ * <p>
+ * Author: Ruchir Bisht
+ */
 @Service
 public class VideoServiceImpl implements VideoService {
 
@@ -46,16 +52,25 @@ public class VideoServiceImpl implements VideoService {
         this.engagementStatsRepo = engagementStatsRepo;
     }
 
+    /**
+     * Publishes a new video after validating that it does not already exist.
+     *
+     * @param videoRequest the details of the video to be published
+     * @return a response indicating the success of the video publication
+     * @throws VideoAlreadyPresentException if a video with the same title already exists
+     */
     @Override
     @Transactional
     public GenericResponse<VideoResponse> publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
         logger.info(ModuleConstants.PUBLISHING_VIDEO + videoRequest.getTitle());
 
+        // Check if the video already exists
         if (videoRepository.existsByTitle(videoRequest.getTitle())) {
             logger.error(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
             throw new VideoAlreadyPresentException(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
         }
 
+        // Create new video entities and save them
         Video video = VideoRequest.toVideo(videoRequest);
         VideoMetaData videoMetaData = VideoRequest.toVideoMetadata(videoRequest, video);
         video.setMetaData(videoMetaData);
@@ -63,6 +78,7 @@ public class VideoServiceImpl implements VideoService {
         EngagementStatistics engagementStatistics = VideoRequest.toEngagementStatistics(video);
         video.setEngagementStatistics(engagementStatistics);
 
+        // Save video and return success response
         videoRepository.save(video);
         logger.info(ModuleConstants.VIDEO_PUBLISHED_SUCCESSFULLY + videoRequest.getTitle());
 
@@ -70,11 +86,20 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(videoDTO, HttpStatus.CREATED);
     }
 
+    /**
+     * Edits an existing video based on the provided video ID and updated details.
+     *
+     * @param id           the ID of the video to be edited
+     * @param videoRequest the updated video details
+     * @return a response indicating the success of the video edit
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     @Override
     @Transactional
     public GenericResponse<VideoResponse> editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
         logger.info(ModuleConstants.EDITING_VIDEO + id);
 
+        // Find the video by ID and update its details
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
@@ -89,6 +114,7 @@ public class VideoServiceImpl implements VideoService {
             metaData.setVideo(existingVideo);
         }
 
+        // Update video metadata
         metaData.setDirector(videoRequest.getDirector());
         metaData.setGenre(videoRequest.getGenre());
         metaData.setCast(videoRequest.getCast());
@@ -104,6 +130,13 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(videoDTO, HttpStatus.OK);  // Changed to HttpStatus.OK
     }
 
+    /**
+     * Delists a video, marking it as unavailable for further viewing.
+     *
+     * @param id the ID of the video to be delisted
+     * @return a response indicating the success of the delisting
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     @Override
     @Transactional
     public GenericResponse<String> delistVideo(Long id) throws VideoNotFoundException {
@@ -115,15 +148,23 @@ public class VideoServiceImpl implements VideoService {
                     return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
+        // Mark the video as delisted if not already delisted
         if (!video.isDelisted()) {
             video.setDelisted(true);
             videoRepository.save(video);
             logger.info(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY + video.getTitle());
         }
 
-        return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);  // Changed to HttpStatus.OK
+        return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
+    /**
+     * Loads the details of a specific video by its ID.
+     *
+     * @param id the ID of the video to be loaded
+     * @return a response containing the video details
+     * @throws VideoNotFoundException if the video is delisted or not found
+     */
     @Override
     @Transactional
     public GenericResponse<VideoDTO> loadVideo(Long id) throws VideoNotFoundException {
@@ -140,6 +181,7 @@ public class VideoServiceImpl implements VideoService {
             throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
         }
 
+        // Update engagement statistics
         EngagementStatistics engagementStats = video.getEngagementStatistics();
         if (engagementStats == null) {
             engagementStats = new EngagementStatistics();
@@ -153,6 +195,7 @@ public class VideoServiceImpl implements VideoService {
         engagementStatsRepo.save(engagementStats);
         video.setEngagementStatistics(engagementStats);
 
+        // Return video details in DTO format
         VideoMetaData metaData = video.getMetaData();
         VideoDTO videoDTO = new VideoDTO(video.getVideoId(), video.getTitle(),
                 metaData.getDirector(), metaData.getCast(),
@@ -160,6 +203,13 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(videoDTO, HttpStatus.OK);
     }
 
+    /**
+     * Plays a specific video by its ID and increments the view count.
+     *
+     * @param id the ID of the video to be played
+     * @return a response indicating the success of the play operation
+     * @throws VideoNotFoundException if the video is delisted or not found
+     */
     @Override
     @Transactional
     public GenericResponse<String> playVideo(Long id) throws VideoNotFoundException {
@@ -176,6 +226,7 @@ public class VideoServiceImpl implements VideoService {
             throw new VideoNotFoundException(ModuleConstants.VIDEO_DELISTED);
         }
 
+        // Increment the view count and save engagement statistics
         EngagementStatistics engagementStats = video.getEngagementStatistics();
         if (engagementStats == null) {
             engagementStats = new EngagementStatistics();
@@ -190,6 +241,13 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(video.getContent(), HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
+    /**
+     * Lists all videos with pagination support.
+     *
+     * @param page the page number to retrieve
+     * @param size the number of videos per page
+     * @return a response containing a list of all videos in DTO form
+     */
     @Override
     public GenericResponse<List<VideoDTO>> listAllVideos(int page, int size) {
         logger.info(ModuleConstants.LISTING_ALL_VIDEOS, page, size);
@@ -203,6 +261,14 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
+    /**
+     * Searches for videos based on the director's name with pagination support.
+     *
+     * @param director the name of the director to search for
+     * @param page     the page number to retrieve
+     * @param size     the number of videos per page
+     * @return a response containing a list of videos filtered by director
+     */
     @Override
     public GenericResponse<List<VideoDTO>> searchVideos(String director, int page, int size) {
         logger.info(ModuleConstants.SEARCHING_VIDEOS, director, page, size);
@@ -224,6 +290,14 @@ public class VideoServiceImpl implements VideoService {
         return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
 
+    /**
+     * Searches for videos based on the director's name with pagination support.
+     *
+     * @param searchPhrase Search phase - director's name , description , genre
+     * @param page         the page number to retrieve
+     * @param size         the number of videos per page
+     * @return a response containing a list of videos filtered by director
+     */
     @Override
     public GenericResponse<List<VideoDTO>> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size) {
         if (StringUtils.isBlank(searchPhrase)) {
@@ -245,5 +319,4 @@ public class VideoServiceImpl implements VideoService {
 
         return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
     }
-
 }

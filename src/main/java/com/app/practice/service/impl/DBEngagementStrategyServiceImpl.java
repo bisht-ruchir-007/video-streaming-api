@@ -13,6 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the EngagementStrategyService interface.
+ * Provides the logic for fetching engagement statistics for a specific video.
+ * <p>
+ * Author: Ruchir Bisht
+ */
 @Service
 public class DBEngagementStrategyServiceImpl implements EngagementStrategyService {
 
@@ -20,16 +26,34 @@ public class DBEngagementStrategyServiceImpl implements EngagementStrategyServic
 
     private final VideoRepository videoRepository;
 
+    /**
+     * Constructor to inject VideoRepository dependency.
+     *
+     * @param videoRepository the repository used to fetch video data
+     */
     public DBEngagementStrategyServiceImpl(VideoRepository videoRepository) {
         this.videoRepository = videoRepository;
     }
 
+    /**
+     * Fetches the engagement statistics for a given video ID.
+     * If the video is found, it returns the engagement details like impressions and views.
+     *
+     * @param id the ID of the video whose engagement statistics are to be fetched
+     * @return a GenericResponse containing EngagementResponse with video details and engagement stats
+     */
     @Override
     public GenericResponse<EngagementResponse> getEngagementStats(Long id) {
         logger.info("Fetching engagement stats for video ID: {}", id);
         try {
-            Video video = videoRepository.findById(id).orElseThrow(() -> new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND));
+            // Fetch the video by ID, throw exception if not found
+            Video video = videoRepository.findById(id)
+                    .orElseThrow(() -> new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND));
+
+            // Fetch the engagement statistics for the video
             EngagementStatistics stats = video.getEngagementStatistics();
+
+            // Construct the engagement response
             EngagementResponse response = new EngagementResponse(
                     video.getTitle(),
                     video.getMetaData().getSynopsis(),
@@ -37,10 +61,14 @@ public class DBEngagementStrategyServiceImpl implements EngagementStrategyServic
                     stats.getImpressions(),
                     stats.getViews()
             );
+
+            // Return the success response with engagement stats
             return GenericResponse.success(response, HttpStatus.OK);
         } catch (VideoNotFoundException ex) {
+            // Handle video not found scenario
             return GenericResponse.error(ModuleConstants.VIDEO_NOT_FOUND, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
+            // Handle other unexpected errors
             logger.error("Error fetching stats: {}", ex.getMessage());
             return GenericResponse.error("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }

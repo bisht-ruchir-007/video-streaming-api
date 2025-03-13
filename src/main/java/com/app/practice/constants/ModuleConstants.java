@@ -59,6 +59,10 @@ public class ModuleConstants {
     public static final String AUTH_HEADER = "Authorization";
     public static final String AUTH_BEARER_PREFIX = "Bearer ";
 
+    public static final String AUTH_MESSAGE = "message";
+    public static final String ACCESS_AUTH_TOKEN = "accessToken";
+    public static final String REFRESH_AUTH_TOKEN = "refreshToken";
+
     // Hashing Constants
     public static final String HASH_ALGO_NAME = "HmacSHA512";
     public static final String MESSAGE_DIGEST_ALGO_NAME = "SHA-512";

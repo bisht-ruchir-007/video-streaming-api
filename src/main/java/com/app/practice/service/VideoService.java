@@ -11,22 +11,90 @@ import com.app.practice.model.response.VideoResponse;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service interface for managing video operations including publishing, editing,
+ * deleting, playing, and listing videos. It also supports video search with pagination.
+ * <p>
+ * Author: Ruchir Bisht
+ */
 public interface VideoService {
 
+    /**
+     * Publishes a new video after validating the provided video details.
+     * Throws an exception if the video is already present.
+     *
+     * @param video the video details to be published
+     * @return a GenericResponse containing the response of video publication
+     * @throws VideoAlreadyPresentException if the video is already present in the database
+     */
     GenericResponse<VideoResponse> publishVideo(VideoRequest video) throws VideoAlreadyPresentException;
 
+    /**
+     * Edits an existing video based on the provided video ID and updated details.
+     * Throws an exception if the video is not found.
+     *
+     * @param id    the ID of the video to be edited
+     * @param video the updated video details
+     * @return a GenericResponse containing the updated video response
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     GenericResponse<VideoResponse> editVideo(Long id, VideoRequest video) throws VideoNotFoundException;
 
+    /**
+     * Delists a video, marking it as unavailable. Throws an exception if the video is not found.
+     *
+     * @param id the ID of the video to be delisted
+     * @return a GenericResponse containing a message indicating the success of delisting
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     GenericResponse<String> delistVideo(Long id) throws VideoNotFoundException;
 
+    /**
+     * Loads the video details based on the provided video ID.
+     * Throws an exception if the video is not found.
+     *
+     * @param id the ID of the video to be loaded
+     * @return a GenericResponse containing the video details
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     GenericResponse<VideoDTO> loadVideo(Long id) throws VideoNotFoundException;
 
+    /**
+     * Plays the video based on the provided video ID.
+     * Throws an exception if the video is not found.
+     *
+     * @param id the ID of the video to be played
+     * @return a GenericResponse containing a message indicating the video is being played
+     * @throws VideoNotFoundException if the video with the given ID is not found
+     */
     GenericResponse<String> playVideo(Long id) throws VideoNotFoundException;
 
+    /**
+     * Lists all videos with pagination support.
+     *
+     * @param page the page number to retrieve
+     * @param size the number of videos per page
+     * @return a GenericResponse containing the list of videos in DTO form
+     */
     GenericResponse<List<VideoDTO>> listAllVideos(int page, int size);  // Pagination added
 
+    /**
+     * Searches for videos based on the director's name with pagination support.
+     *
+     * @param director the name of the director to search for
+     * @param page     the page number to retrieve
+     * @param size     the number of videos per page
+     * @return a GenericResponse containing the list of videos filtered by director
+     */
     GenericResponse<List<VideoDTO>> searchVideos(String director, int page, int size);  // Pagination added
 
+    /**
+     * Searches for videos based on a search phrase (can be title, director, etc.) with pagination support.
+     *
+     * @param searchPhrase the phrase to search for in video details
+     * @param page         the page number to retrieve
+     * @param size         the number of videos per page
+     * @return a GenericResponse containing the list of videos filtered by search phrase
+     */
     GenericResponse<List<VideoDTO>> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size);  // Pagination added
-
 }
