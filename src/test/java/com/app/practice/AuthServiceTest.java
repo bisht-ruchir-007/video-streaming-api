@@ -3,7 +3,7 @@ package com.app.practice;
 import com.app.practice.model.request.RefreshTokenRequest;
 import com.app.practice.model.request.UserCredentials;
 import com.app.practice.model.response.GenericResponse;
-import com.app.practice.service.impl.AuthServiceImpl;
+import com.app.practice.service.impl.auth.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -38,5 +38,4 @@ public class Video {
     @OneToOne(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private EngagementStatistics engagementStatistics;
 
-
 }

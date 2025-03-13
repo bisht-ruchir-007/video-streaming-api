@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Service interface for managing video operations including publishing, editing,
- * deleting, playing, and listing videos. It also supports video search with pagination.
+ * deleting, and listing videos. It also supports video search with pagination.
  * <p>
  * Author: Ruchir Bisht
  */
@@ -46,26 +46,6 @@ public interface VideoService {
      * @throws VideoNotFoundException if the video with the given ID is not found
      */
     GenericResponse<String> delistVideo(Long id) throws VideoNotFoundException;
-
-    /**
-     * Loads the video details based on the provided video ID.
-     * Throws an exception if the video is not found.
-     *
-     * @param id the ID of the video to be loaded
-     * @return a GenericResponse containing the video details
-     * @throws VideoNotFoundException if the video with the given ID is not found
-     */
-    GenericResponse<VideoDTO> loadVideo(Long id) throws VideoNotFoundException;
-
-    /**
-     * Plays the video based on the provided video ID.
-     * Throws an exception if the video is not found.
-     *
-     * @param id the ID of the video to be played
-     * @return a GenericResponse containing a message indicating the video is being played
-     * @throws VideoNotFoundException if the video with the given ID is not found
-     */
-    GenericResponse<String> playVideo(Long id) throws VideoNotFoundException;
 
     /**
      * Lists all videos with pagination support.
