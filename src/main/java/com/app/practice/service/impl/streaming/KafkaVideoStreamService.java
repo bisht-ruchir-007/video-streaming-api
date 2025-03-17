@@ -1,6 +1,7 @@
 package com.app.practice.service.impl.streaming;
 
 import com.app.practice.constants.ModuleConstants;
+import com.app.practice.constants.VideoStreamConstants;
 import com.app.practice.dto.VideoDTO;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
@@ -50,7 +51,7 @@ public class KafkaVideoStreamService implements VideoStreamService {
         Video video = fetchVideoById(id);
 
         // Send a Kafka message for video engagement tracking
-        kafkaProducerService.sendMessage("video-load-events", video.getVideoId().toString());
+        kafkaProducerService.sendMessage(VideoStreamConstants.VIDEO_PLAY_TOPIC, video.getVideoId().toString());
 
         VideoDTO videoDTO = new VideoDTO(video.getVideoId(), video.getTitle(),
                 video.getMetaData().getDirector(), video.getMetaData().getCast(),
@@ -64,8 +65,10 @@ public class KafkaVideoStreamService implements VideoStreamService {
         logger.info(ModuleConstants.PLAYING_VIDEO + "{}", id);
         Video video = fetchVideoById(id);
 
-        // Send a Kafka message to track play event
-        kafkaProducerService.sendMessage("video-play-events", video.getVideoId().toString());
+        /*
+          Send a Kafka message to track play event.
+         */
+        kafkaProducerService.sendMessage(VideoStreamConstants.VIDEO_PLAY_TOPIC, video.getVideoId().toString());
 
         return GenericResponse.success(video.getContent(), HttpStatus.OK);
     }

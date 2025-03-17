@@ -19,13 +19,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class PermittedEndpointsConfig {
 
-    // Array of RequestMatchers that specify the permitted endpoints.
+
     public static final RequestMatcher[] PERMITTED_MATCHERS = new RequestMatcher[]{
-            // Swagger and API documentation related endpoints
-            new AntPathRequestMatcher("/v3/api-docs/**"), // OpenAPI documentation
-            new AntPathRequestMatcher("/swagger-ui/**"), // Swagger UI interface
-            // Authentication base path (use correct version)
-            new AntPathRequestMatcher(AuthURIConstants.AUTH_BASE_PATH + "/**") // Ensure VERSION is correctly replaced
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/swagger-ui/**"),
+            new AntPathRequestMatcher(AuthURIConstants.AUTH_BASE_PATH + "/**")
     };
 
     /**

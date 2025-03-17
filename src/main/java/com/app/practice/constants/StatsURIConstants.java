@@ -13,13 +13,16 @@ package com.app.practice.constants;
 
 public class StatsURIConstants {
 
-    // Base path for engagement-stats related APIs
+    /*
+     Base path for engagement-stats related APIs
+     */
     public static final String STATS_BASE_PATH = "/api/v1/stats"; // The root path for all engagement stats APIs
 
-    // Endpoints for stats operations
+    /*
+     Endpoints for stats operations
+     */
     public static final String STATS_ENGAGEMENT_ENDPOINT = "/{id}/engagement"; // Endpoint for fetching engagement stats for a specific resource by ID
 
-    // Private constructor to prevent instantiation
     private StatsURIConstants() {
         throw new UnsupportedOperationException("This is a constants class and cannot be instantiated.");
     }

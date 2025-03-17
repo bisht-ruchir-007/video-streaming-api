@@ -37,7 +37,9 @@ public class JwtUtil {
         logger.info("JwtUtil initialized with expiration times: AccessToken={}s, RefreshToken={}s", jwtExpirationTimeInSec, refreshExpirationTimeInSec);
     }
 
-    // Generate SecretKey using SHA-512 hashing
+    /*
+       Generate SecretKey using SHA-512 hashing
+     */
     private SecretKey generateSecretKey(String secret) {
         try {
             MessageDigest sha512 = MessageDigest.getInstance(ModuleConstants.MESSAGE_DIGEST_ALGO_NAME);
@@ -82,7 +84,7 @@ public class JwtUtil {
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expirationTime * 1000)) // Convert seconds to milliseconds
+                .expiration(new Date(System.currentTimeMillis() + expirationTime * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -128,7 +130,7 @@ public class JwtUtil {
         return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
                 .getBody();
     }
 

@@ -36,8 +36,11 @@ public class KafkaProducerService {
     public Video requestVideoDetails(Long videoId) {
         logger.info("Requesting video details for ID: {}", videoId);
 
-        // TODO: Replace with actual microservice communication (e.g., REST call, Kafka request-reply, or DB lookup)
-        //Video sampleVideo = new Video(videoId, "Sample Video", new VideoMetaData(), false, "video-content-url");
+        /*
+         TODO: Replace with actual microservice communication (e.g., REST call, Kafka request-reply, or DB lookup)
+         Video sampleVideo = new Video(videoId, "Sample Video", new VideoMetaData(), false, "video-content-url");
+         */
+
         return new Video();
     }
 }
