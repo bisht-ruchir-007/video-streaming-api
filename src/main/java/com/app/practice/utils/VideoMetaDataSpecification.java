@@ -24,10 +24,11 @@ public class VideoMetaDataSpecification {
      */
     public static Specification<VideoMetaData> searchByKeyword(String searchPhrase) {
         return (root, query, criteriaBuilder) -> {
-            // Prepare the search phrase with wildcards for SQL LIKE query and convert to lowercase for case-insensitive search
             String likePattern = "%" + searchPhrase.toLowerCase() + "%";
 
-            // Return an 'OR' condition to search for the keyword in director, genre, or cast fields
+            /*
+               Return an 'OR' condition to search for the keyword in director, genre, or cast fields
+             */
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get(QueryParams.DIRECTOR.toString())), likePattern),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get(QueryParams.GENRE.toString())), likePattern),

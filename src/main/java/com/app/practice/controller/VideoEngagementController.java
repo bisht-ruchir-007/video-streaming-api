@@ -98,9 +98,7 @@ public class VideoEngagementController {
     public ResponseEntity<GenericResponse<EngagementResponse>> getEngagementStats(@PathVariable Long id)
             throws VideoNotFoundException {
         LOGGER.info("Received request for engagement stats of video ID: {}", id);
-
         GenericResponse<EngagementResponse> engagementStatsResponse = engagementService.getEngagementStats(id);
-
         LOGGER.info("Returning engagement stats for video ID: {}", id);
         return ResponseEntity.ok(engagementStatsResponse);
     }

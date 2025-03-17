@@ -6,14 +6,17 @@ import com.app.practice.model.request.UserCredentials;
 import com.app.practice.model.response.GenericResponse;
 import com.app.practice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Code Author : Ruchir Bisht
@@ -41,11 +44,7 @@ public class AuthController {
             @RequestBody UserCredentials userCredentials) {
 
         LOGGER.info("User registration request received for username: {}", userCredentials.getUsername());
-
-        // Call service to register user and get response
         GenericResponse<?> response = authService.registerUser(userCredentials);
-
-        // Return response with CREATED status
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -62,11 +61,7 @@ public class AuthController {
             @RequestBody UserCredentials userCredentials) {
 
         LOGGER.info("User login request received for username: {}", userCredentials.getUsername());
-
-        // Call service to log in and get response
         GenericResponse<?> response = authService.loginUser(userCredentials);
-
-        // Return response with OK status
         return ResponseEntity.ok(response);
     }
 
@@ -82,10 +77,7 @@ public class AuthController {
             @Parameter(description = "Refresh token request payload", required = true)
             @RequestBody RefreshTokenRequest tokenRequest) {
 
-        // Call service to refresh token and get response
         GenericResponse<?> response = authService.refreshToken(tokenRequest);
-
-        // Return response with OK status
         return ResponseEntity.ok(response);
     }
 }

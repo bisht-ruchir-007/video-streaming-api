@@ -58,11 +58,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
                 .authorizeHttpRequests(auth -> {
                     LOGGER.info("Configuring authentication rules...");
-
                     auth.requestMatchers(permittedMatchers).permitAll();
-
                     LOGGER.info("Public endpoints: {}, {}", AuthURIConstants.LOGIN_ENDPOINT, AuthURIConstants.REGISTER_ENDPOINT);
-
                     auth.anyRequest().authenticated();
                     LOGGER.info("All other endpoints require authentication.");
                 })

@@ -1,11 +1,11 @@
 package com.app.practice.service.impl.engagement;
 
 import com.app.practice.constants.ModuleConstants;
-import com.app.practice.model.response.EngagementResponse;
-import com.app.practice.model.response.GenericResponse;
 import com.app.practice.entity.EngagementStatistics;
 import com.app.practice.entity.Video;
 import com.app.practice.exception.VideoNotFoundException;
+import com.app.practice.model.response.EngagementResponse;
+import com.app.practice.model.response.GenericResponse;
 import com.app.practice.repository.VideoRepository;
 import com.app.practice.service.EngagementStrategyService;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +39,12 @@ public class DBEngagementStrategyServiceImpl implements EngagementStrategyServic
     public GenericResponse<EngagementResponse> getEngagementStats(Long id) {
         logger.info("Fetching engagement stats for video ID: {}", id);
         try {
-            // Fetch the video by ID, throw exception if not found
+
             Video video = videoRepository.findById(id)
                     .orElseThrow(() -> new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND));
 
-            // Fetch the engagement statistics for the video
             EngagementStatistics stats = video.getEngagementStatistics();
 
-            // Construct the engagement response
             EngagementResponse response = new EngagementResponse(
                     video.getTitle(),
                     video.getMetaData().getSynopsis(),
@@ -55,13 +53,10 @@ public class DBEngagementStrategyServiceImpl implements EngagementStrategyServic
                     stats.getViews()
             );
 
-            // Return the success response with engagement stats
             return GenericResponse.success(response, HttpStatus.OK);
         } catch (VideoNotFoundException ex) {
-            // Handle video not found scenario
             return GenericResponse.error(ModuleConstants.VIDEO_NOT_FOUND, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
-            // Handle other unexpected errors
             logger.error("Error fetching stats: {}", ex.getMessage());
             return GenericResponse.error("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }

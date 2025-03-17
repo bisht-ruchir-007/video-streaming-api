@@ -15,6 +15,6 @@ public class KafkaConstants {
     public static final String MOCK_VIDEO_DIRECTOR = "Mock Director";
 
     private KafkaConstants() {
-        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("This is a constants class and cannot be instantiated.");
     }
 }

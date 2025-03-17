@@ -29,7 +29,6 @@ import java.util.List;
 public class VideoManagementController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoManagementController.class);
-
     private final VideoService videoService;
 
 

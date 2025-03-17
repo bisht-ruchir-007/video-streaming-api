@@ -28,7 +28,7 @@ public class Video {
 
     @Lob
     @Column(columnDefinition = "TEXT")
-    private String content; // Mock video content as a string
+    private String content;
 
     private boolean isDelisted = false;
 

@@ -36,7 +36,7 @@ public class User implements UserDetails {
     private String password;
 
     @Column(nullable = false)
-    private String role; // Example: "ROLE_USER", "ROLE_ADMIN"
+    private String role;
 
     /**
      * Get the authorities (roles) granted to the user.

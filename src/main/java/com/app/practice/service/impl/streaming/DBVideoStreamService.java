@@ -23,12 +23,10 @@ import org.springframework.stereotype.Service;
 public class DBVideoStreamService implements VideoStreamService {
 
     private static final Logger logger = LoggerFactory.getLogger(DBVideoStreamService.class);
-
-    @Value("${video.stream.loadAndPlayLinked:false}")
-    private Boolean isLoadAndPlayLinked;
-
     private final VideoRepository videoRepository;
     private final EngagementStatisticsRepository engagementStatsRepo;
+    @Value("${video.stream.loadAndPlayLinked:false}")
+    private Boolean isLoadAndPlayLinked;
 
     /**
      * Fetches a video by its ID and validates its availability.
@@ -115,8 +113,10 @@ public class DBVideoStreamService implements VideoStreamService {
         logger.info(ModuleConstants.PLAYING_VIDEO + "{}", id);
         Video video = fetchVideoById(id);
 
-        // NOTE : Assumed that video loading and playing are independent,
-        // and engagement stats will be recorded accordingly.
+        /*
+            NOTE : Assumed that video loading and playing are independent,
+            and engagement stats will be recorded accordingly.
+         */
         updateEngagementStatistics(video, isLoadAndPlayLinked);
 
         return GenericResponse.success(video.getContent(), HttpStatus.OK);

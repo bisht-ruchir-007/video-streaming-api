@@ -57,13 +57,11 @@ public class VideoServiceImpl implements VideoService {
     public GenericResponse<VideoResponse> publishVideo(VideoRequest videoRequest) throws VideoAlreadyPresentException {
         logger.info(ModuleConstants.PUBLISHING_VIDEO + videoRequest.getTitle());
 
-        // Check if the video already exists
         if (videoRepository.existsByTitle(videoRequest.getTitle())) {
             logger.error(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
             throw new VideoAlreadyPresentException(ModuleConstants.VIDEO_ALREADY_PRESENT + videoRequest.getTitle());
         }
 
-        // Create new video entities and save them
         Video video = VideoRequest.toVideo(videoRequest);
         VideoMetaData videoMetaData = VideoRequest.toVideoMetadata(videoRequest, video);
         video.setMetaData(videoMetaData);
@@ -71,7 +69,6 @@ public class VideoServiceImpl implements VideoService {
         EngagementStatistics engagementStatistics = VideoRequest.toEngagementStatistics(video);
         video.setEngagementStatistics(engagementStatistics);
 
-        // Save video and return success response
         videoRepository.save(video);
         logger.info(ModuleConstants.VIDEO_PUBLISHED_SUCCESSFULLY + videoRequest.getTitle());
 
@@ -92,7 +89,6 @@ public class VideoServiceImpl implements VideoService {
     public GenericResponse<VideoResponse> editVideo(Long id, VideoRequest videoRequest) throws VideoNotFoundException {
         logger.info(ModuleConstants.EDITING_VIDEO + id);
 
-        // Find the video by ID and update its details
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error(ModuleConstants.VIDEO_NOT_FOUND + id);
@@ -102,6 +98,7 @@ public class VideoServiceImpl implements VideoService {
         existingVideo.setTitle(videoRequest.getTitle());
 
         VideoMetaData metaData = existingVideo.getMetaData();
+
         if (metaData == null) {
             metaData = new VideoMetaData();
             metaData.setVideo(existingVideo);
@@ -120,7 +117,7 @@ public class VideoServiceImpl implements VideoService {
 
         logger.info(ModuleConstants.VIDEO_EDITED_SUCCESSFULLY + videoRequest.getTitle());
         VideoResponse videoDTO = VideoResponse.videoMapper(existingVideo);
-        return GenericResponse.success(videoDTO, HttpStatus.OK);  // Changed to HttpStatus.OK
+        return GenericResponse.success(videoDTO, HttpStatus.OK);
     }
 
     /**
@@ -141,14 +138,13 @@ public class VideoServiceImpl implements VideoService {
                     return new VideoNotFoundException(ModuleConstants.VIDEO_NOT_FOUND);
                 });
 
-        // Mark the video as delisted if not already delisted
         if (!video.isDelisted()) {
             video.setDelisted(true);
             videoRepository.save(video);
             logger.info(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY + video.getTitle());
         }
 
-        return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);  // HttpStatus.OK remains correct
+        return GenericResponse.success(ModuleConstants.VIDEO_DELISTED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     /**
@@ -168,7 +164,7 @@ public class VideoServiceImpl implements VideoService {
                         video.getMetaData().getDirector(), video.getMetaData().getCast(),
                         video.getMetaData().getGenre(), video.getMetaData().getRunningTime()))
                 .getContent();
-        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);
     }
 
     /**
@@ -185,7 +181,7 @@ public class VideoServiceImpl implements VideoService {
 
         if (StringUtils.isBlank(director)) {
             logger.warn(ModuleConstants.INVALID_DIRECTOR_NAME);
-            return GenericResponse.error(ModuleConstants.INVALID_DIRECTOR_NAME, HttpStatus.BAD_REQUEST);  // HttpStatus.BAD_REQUEST remains correct
+            return GenericResponse.error(ModuleConstants.INVALID_DIRECTOR_NAME, HttpStatus.BAD_REQUEST);
         }
 
         Pageable pageable = PageRequest.of(page, size);
@@ -197,7 +193,7 @@ public class VideoServiceImpl implements VideoService {
                         metaData.getDirector(), metaData.getCast(), metaData.getGenre(), metaData.getRunningTime()))
                 .collect(Collectors.toList());
 
-        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);
     }
 
     /**
@@ -212,7 +208,7 @@ public class VideoServiceImpl implements VideoService {
     public GenericResponse<List<VideoDTO>> searchVideosBasedOnSearchPhrase(String searchPhrase, int page, int size) {
         if (StringUtils.isBlank(searchPhrase)) {
             logger.warn(ModuleConstants.INVALID_SEARCH_PHRASE);
-            return GenericResponse.error(ModuleConstants.INVALID_SEARCH_PHRASE, HttpStatus.BAD_REQUEST);  // HttpStatus.BAD_REQUEST remains correct
+            return GenericResponse.error(ModuleConstants.INVALID_SEARCH_PHRASE, HttpStatus.BAD_REQUEST);
         }
 
         logger.info("Searching videos with phrase: {} (Page: {}, Size: {})", searchPhrase, page, size);
@@ -227,6 +223,6 @@ public class VideoServiceImpl implements VideoService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        return GenericResponse.success(videoDTOList, HttpStatus.OK);  // HttpStatus.OK remains correct
+        return GenericResponse.success(videoDTOList, HttpStatus.OK);
     }
 }

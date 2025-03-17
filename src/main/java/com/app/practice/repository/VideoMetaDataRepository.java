@@ -33,5 +33,7 @@ public interface VideoMetaDataRepository extends JpaRepository<VideoMetaData, Lo
     @Query("SELECT v FROM VideoMetaData v WHERE LOWER(v.director) = LOWER(:director)")
     List<VideoMetaData> findByDirectorIgnoreCase(@Param("director") String director, Pageable pageable);
 
-    // Sort By Methods can also used
+    /*
+      Scope : Sort By Methods can also implement
+     */
 }
