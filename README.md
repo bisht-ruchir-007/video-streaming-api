@@ -252,7 +252,7 @@ Swagger UI - http://localhost:8080/swagger-ui/index.html
 
 ## **Contact Information**
 📌 **Project Maintainer**: Ruchir Bisht  
-📌 **GitHub Repository**: [Video Engagement Statistics System](https://github.com/bisht-ruchir-007/video-stream-app)
+📌 **GitHub Repository**: [Video Engagement Statistics System](https://github.com/bisht-ruchir-007/video-streaming-api)
 
 ---
 
